@@ -34,6 +34,6 @@ public class MainActivityTest {
     assertTrue(activity != null);
     
     TextView mytextview = (TextView) activity.findViewById(R.id.mytextview);
-    assertEquals("FU JAVA!!!", mytextview.getText().toString());
+    assertEquals("java sux!!", mytextview.getText().toString());
   }
 }
