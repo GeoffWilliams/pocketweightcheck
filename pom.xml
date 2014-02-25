@@ -7,6 +7,12 @@
     <name>pocketweightcheck</name>
     <packaging>pom</packaging>
 
+  <scm>
+    <connection>scm:git:git@github.com:geoffwilliams/pocketweightcheck</connection>
+    <developerConnection>scm:git:git@github.com:geoffwilliams/pocketweightcheck.git</developerConnection>
+    <url>http://github.com/geoffwilliams/pocketweightcheck</url>
+  </scm>
+  
     <properties>
         <projectVersion>0.0.0-SNAPSHOT</projectVersion>
     </properties>
