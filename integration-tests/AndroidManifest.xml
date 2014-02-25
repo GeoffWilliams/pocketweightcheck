@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="uk.me.geoffwilliams.pocketweightcheck.integrationtest"
+    android:versionCode="2"
+    android:versionName="1.0.0-SNAPSHOT" >
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+
+    <uses-sdk
+        android:minSdkVersion="18"
+        android:targetSdkVersion="18" />
+    
+    <application android:debuggable="true">
+        <uses-library android:name="android.test.runner"/>
+    </application>
+
+    <instrumentation android:label="GitHub for Android - Integration Tests" 
+                     android:name="android.test.InstrumentationTestRunner"
+                     android:targetPackage="uk.me.geoffwilliams.pocketweightcheck"/>
+
+
+</manifest>
