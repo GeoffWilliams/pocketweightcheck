@@ -28,12 +28,14 @@ import static org.junit.Assert.*;
 @RunWith(RobolectricTestRunner.class)
 public class MainActivityTest {
 
-  @org.junit.Test
-  public void testSomething() throws Exception {
-    Activity activity = Robolectric.buildActivity(MainActivity.class).create().get();
-    assertTrue(activity != null);
-    
-    TextView mytextview = (TextView) activity.findViewById(R.id.mytextview);
-    assertEquals("Coming soon...", mytextview.getText().toString());
-  }
+    @org.junit.Test
+    public void testSomething() throws Exception {
+        Activity activity = Robolectric.buildActivity(MainActivity.class).create().get();
+        assertTrue(activity != null);
+
+        TextView mytextview = (TextView) activity.findViewById(R.id.mytextview);
+
+        assertEquals(
+                "Coming soon...", mytextview.getText().toString());
+    }
 }

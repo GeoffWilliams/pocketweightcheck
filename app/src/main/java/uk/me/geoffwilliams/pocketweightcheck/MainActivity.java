@@ -18,23 +18,49 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
+import android.util.Log;
+import org.androidannotations.annotations.EActivity;
 
-public class MainActivity extends Activity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-	}
+@EActivity(R.layout.activity_main)
+public class MainActivity extends FragmentActivity {
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+    private final static String TAG = "pocketweightcheck";
+    
+//    @Inject 
+//    private Provider<FragmentManager> fragmentManagerProvider;
+//    
 
+    private WeightEntryDialog weightEntryDialog;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "starting!");
+        setContentView(R.layout.activity_main);
+        weightEntryDialog = new WeightEntryDialog_();
+        enterDataIfNeeded();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    public void enterDataIfNeeded() {
+        if (true) {
+            Log.d(TAG, "show weight entry dialog...");
+            
+            weightEntryDialog.show(getSupportFragmentManager(), TAG);
+            Log.d(TAG, "..control returned to main thread");
+
+        }
+    }
 }
+
