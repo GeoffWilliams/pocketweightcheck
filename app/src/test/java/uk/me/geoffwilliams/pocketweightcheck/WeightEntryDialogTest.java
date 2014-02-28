@@ -50,6 +50,8 @@ public class WeightEntryDialogTest {
 
     private Button okButton;
     private EditText weightEntryEditText;// = (EditText) activity.findViewById(R.id.weightEntryEditText);
+    private Button cancelButton;
+    private WeightEntryDialog_ fragment;
 
     public static void startFragment(Fragment fragment) {
         FragmentActivity activity = Robolectric.buildActivity(FragmentActivity.class)
@@ -73,13 +75,13 @@ public class WeightEntryDialogTest {
      */
     @Before
     public void setUp() {
-        WeightEntryDialog_ weightEntryDialog = new WeightEntryDialog_();
-        startFragment(weightEntryDialog);
+        WeightEntryDialog_ fragment = new WeightEntryDialog_();
+        startFragment(fragment);
         
-        weightEntryEditText = (EditText) weightEntryDialog.findViewById(R.id.weightEntryEditText);
-        okButton = (Button) weightEntryDialog.findViewById(R.id.okButton);
-        
-        assertNotNull(weightEntryDialog);
+        weightEntryEditText = (EditText) fragment.findViewById(R.id.weightEntryEditText);
+        okButton = (Button) fragment.findViewById(R.id.okButton);
+        cancelButton = (Button) fragment.findViewById(R.id.cancelButton);
+        assertNotNull(fragment);
     }
 
     
@@ -138,7 +140,13 @@ public class WeightEntryDialogTest {
         assertEquals(getResourceString(R.string.msg_invalid), ShadowToast.getTextOfLatestToast());
     }
 
-
+// Not possible to test this in roboelectric at the moment - gives null
+// pointer exception in call to performClick()...
+//    @Test
+//    public void testCancel() throws Exception {
+//        cancelButton.performClick();
+//        assertFalse(fragment.isVisible());
+//    }
 
     private void enterTime(int h, int m) {
         TimePickerFragment fragment = new TimePickerFragment();

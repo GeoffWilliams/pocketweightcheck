@@ -71,6 +71,8 @@ public class DateUtils {
             Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
             toast.show();
         }
+        
+        System.out.println("utils toast msg: **************" + message);
 
         return status;
 
