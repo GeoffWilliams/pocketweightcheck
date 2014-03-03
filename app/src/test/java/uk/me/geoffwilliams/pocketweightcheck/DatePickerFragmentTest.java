@@ -24,6 +24,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowToast;
 import static org.robolectric.Robolectric.shadowOf;
+import org.robolectric.shadows.ShadowLog;
 
 import org.robolectric.util.FragmentTestUtil;
 
@@ -35,10 +36,10 @@ import org.robolectric.util.FragmentTestUtil;
 public class DatePickerFragmentTest {
 
     protected FragmentActivity activity;// = // Robolectric.buildActivity(MainActivity.class).create().get();
-    private DatePickerFragment fragment;
+    private DatePickerFragment_ fragment;
     private FragmentManager fragmentManager;
-    private DateUtils utils = new DateUtils();
-
+    //private DateUtils_ utils;
+    
     public static void startFragment(Fragment fragment) {
         FragmentActivity activity = Robolectric.buildActivity(FragmentActivity.class)
                 .create()
@@ -54,6 +55,8 @@ public class DatePickerFragmentTest {
 
     @Before
     public void setUp() {
+        ShadowLog.stream = System.out;
+        
         activity = Robolectric.buildActivity(MainActivity.class)
                 .create()
                 .start()
@@ -65,7 +68,8 @@ public class DatePickerFragmentTest {
 //        shadowOf(activity).callOnStart();
 //        shadowOf(activity).callOnResume();
 
-        fragment = new DatePickerFragment();
+        fragment = new DatePickerFragment_();
+        
         fragmentManager = activity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_activity, fragment);
@@ -81,8 +85,9 @@ public class DatePickerFragmentTest {
         //
         // we cannot directly test the picker but we can test the logic in the 
         // onDateSet method...
-        fragment.utils = utils;
-        utils.context = activity;
+    //    utils = DateUtils_.getInstance_(activity);
+      //  fragment.utils = utils;
+   //     utils.context = activity;
         FragmentTestUtil.startFragment(fragment);
         assertNotNull(fragment);
 
@@ -102,7 +107,7 @@ public class DatePickerFragmentTest {
         // work out a date that is too old
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_YEAR, - 1000);// DateUtils.MAX_SAMPLE_DATE - 1);
+        cal.add(Calendar.DAY_OF_YEAR, - DateUtils.MAX_SAMPLE_DATE - 1);
 
         System.out.println("cal date " + cal.getTime().toString());
         
@@ -121,16 +126,24 @@ public class DatePickerFragmentTest {
 
     @Test
     public void testDateFutureFail() throws Exception {
-
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        enterDate(
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH) - 30,
-                cal.get(Calendar.DAY_OF_MONTH)
-        );
+        cal.add(Calendar.DAY_OF_YEAR, 1);// DateUtils.MAX_SAMPLE_DATE - 1);
 
+        System.out.println("cal date " + cal.getTime().toString());
+
+                // send for processing
+        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.onDateSet(null, //new DatePicker(activity), 
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH));
+
+        
         assertEquals(getResourceString(R.string.msg_future), ShadowToast.getTextOfLatestToast());
 
+        
+        
+        
     }
 }

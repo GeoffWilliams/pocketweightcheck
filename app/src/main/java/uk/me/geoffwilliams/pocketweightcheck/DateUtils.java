@@ -19,6 +19,7 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 import java.util.Date;
 import org.androidannotations.annotations.EBean;
@@ -32,6 +33,7 @@ import org.androidannotations.annotations.res.StringRes;
  */
 @EBean(scope = EBean.Scope.Singleton)
 public class DateUtils {
+    private static final String TAG = "pocketweightcheck.DateUtils";
 
     public final static int MAX_SAMPLE_DATE = 30;
     private final Date oldestAllowable = new Date(
@@ -52,6 +54,7 @@ public class DateUtils {
     }
 
     public boolean setDate(Date date) {
+        Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!!!!LOGGING WORKS IN CONSOLE?!");
         boolean status;
         String message = null;
         if (date.before(oldestAllowable)) {
@@ -63,6 +66,8 @@ public class DateUtils {
             status = false;
             message = msgFuture;
         } else {
+            System.out.println("Date accepted for processing:" + date.toString() );
+            
             this.date = date;
             status = true;
         }
@@ -73,6 +78,7 @@ public class DateUtils {
         }
         
         System.out.println("utils toast msg: **************" + message);
+        System.out.println("msgs: " + msgFuture + msgTooOld ) ;
 
         return status;
 
