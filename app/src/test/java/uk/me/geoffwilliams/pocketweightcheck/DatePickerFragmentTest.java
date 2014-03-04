@@ -18,9 +18,6 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import java.util.Calendar;
@@ -28,41 +25,20 @@ import java.util.Date;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowToast;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.FragmentTestUtil;
 
 /**
  *
  * @author geoff
  */
-@RunWith(RobolectricTestRunner.class)
-public class DatePickerFragmentTest {
+public class DatePickerFragmentTest extends TestSupport {
     private final static String TAG = "pocketweightcheck.DatePickerFragmentTest";
-    protected FragmentActivity activity;
     private DatePickerFragment_ fragment;
-    private FragmentManager fragmentManager;
     
-    public static void startFragment(Fragment fragment) {
-        FragmentActivity activity = Robolectric.buildActivity(FragmentActivity.class)
-                .create()
-                .start()
-                .resume()
-                .get();
-
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(fragment, "tag");
-        fragmentTransaction.commit();
-    }
-
     @Before
-    public void setUp() {
-        ShadowLog.stream = System.out;
-        
+    public void setUp() {        
         activity = Robolectric.buildActivity(MainActivity.class)
                 .create()
                 .start()
@@ -84,9 +60,6 @@ public class DatePickerFragmentTest {
 
     }
 
-    private String getResourceString(int id) {
-        return activity.getResources().getString(id);
-    }
 
 
     @Test
@@ -124,7 +97,7 @@ public class DatePickerFragmentTest {
 
         // send for processing
         fragment.show(activity.getSupportFragmentManager(), "tag");
-        fragment.onDateSet(null, //new DatePicker(activity), 
+        fragment.onDateSet(null,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH));
@@ -142,7 +115,7 @@ public class DatePickerFragmentTest {
 
         // send for processing
         fragment.show(activity.getSupportFragmentManager(), "tag");
-        fragment.onDateSet(null, //new DatePicker(activity), 
+        fragment.onDateSet(null, 
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH));

@@ -20,17 +20,13 @@ package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import java.util.Calendar;
 import java.util.Date;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.FragmentTestUtil;
 /**
@@ -40,9 +36,7 @@ import org.robolectric.util.FragmentTestUtil;
 public class TimePickerFragmentTest extends TestSupport {
     
     private final static String TAG = "pocketweightcheck.TimePickerFragmentTest";
-    protected FragmentActivity activity;
     private TimePickerFragment_ fragment;
-    private FragmentManager fragmentManager;
  
     @Before
     public void setUp() {      
@@ -76,7 +70,7 @@ public class TimePickerFragmentTest extends TestSupport {
 
         // send for processing
         fragment.show(activity.getSupportFragmentManager(), "tag");
-        fragment.onTimeSet(null, //new DatePicker(activity), 
+        fragment.onTimeSet(null, 
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE));
 
@@ -84,4 +78,56 @@ public class TimePickerFragmentTest extends TestSupport {
         assertNull(ShadowToast.getTextOfLatestToast());
 
     }
+    
+    @Test
+    public void testTimeFutureFail() throws Exception {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        // need date a whole day in the future as we only
+        // send year+month+day for processing... 
+        cal.add(Calendar.MINUTE, 1);
+
+        Log.d(TAG,"cal date " + cal.getTime().toString());
+
+        // send for processing
+        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.onTimeSet(null, 
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE));
+
+        
+        assertEquals(getResourceString(R.string.msg_future), ShadowToast.getTextOfLatestToast());
+    }    
+
+    @Test
+    public void testTimeTooOldFail() throws Exception {
+        // since we are only setting the TIME in the dialog
+        // we must first set the DATE so that decreasing by
+        // one minute in TIME will cause rejection
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_YEAR, - DateUtils.MAX_SAMPLE_DATE);
+        Log.d(TAG, "Computed old DATE: " + cal.getTime().toString());
+        
+        // put the date inside the dateutils instance singleton and ensure its 
+        // accepted.  this is equivalent to setting the date first using the
+        // date picker
+        DateUtils_ dateUtils = DateUtils_.getInstance_(activity);
+        assertTrue(dateUtils.setDate(cal.getTime()));
+        
+        // compute a time that is too old
+        cal.add(Calendar.MINUTE, -5);
+        Log.d(TAG, "Computed old TIME: " + cal.getTime().toString());
+        
+        Log.d(TAG,"cal date " + cal.getTime().toString());
+
+        // send for processing
+        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.onTimeSet(null, 
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE));
+
+        
+        assertEquals(getResourceString(R.string.msg_too_old), ShadowToast.getTextOfLatestToast());
+    }    
 }

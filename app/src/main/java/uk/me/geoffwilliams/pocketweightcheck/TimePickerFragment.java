@@ -53,6 +53,10 @@ public class TimePickerFragment extends DialogFragment
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         Calendar cal = GregorianCalendar.getInstance();
+        // preseve previously set DATE info
+        cal.setTime(utils.getDate());
+        
+        // update with new TIME info
         cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
         cal.set(Calendar.MINUTE, minute);
 
