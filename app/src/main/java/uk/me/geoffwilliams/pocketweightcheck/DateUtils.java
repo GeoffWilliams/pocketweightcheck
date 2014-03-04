@@ -54,7 +54,6 @@ public class DateUtils {
     }
 
     public boolean setDate(Date date) {
-        Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!!!!LOGGING WORKS IN CONSOLE?!");
         boolean status;
         String message = null;
         if (date.before(oldestAllowable)) {
@@ -66,7 +65,7 @@ public class DateUtils {
             status = false;
             message = msgFuture;
         } else {
-            System.out.println("Date accepted for processing:" + date.toString() );
+            Log.d(TAG, "Date accepted for processing:" + date.toString() );
             
             this.date = date;
             status = true;
@@ -77,8 +76,7 @@ public class DateUtils {
             toast.show();
         }
         
-        System.out.println("utils toast msg: **************" + message);
-        System.out.println("msgs: " + msgFuture + msgTooOld ) ;
+        Log.d(TAG,"utils toast msg: " + message + " status: " + status);
 
         return status;
 

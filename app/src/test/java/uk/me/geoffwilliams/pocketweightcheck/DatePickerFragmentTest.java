@@ -1,19 +1,28 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * pocketweightcheck -- simple android app to track of your weight
+ * Copyright (C) 2014 Geoff Williams <geoff@geoffwilliams.me.uk>
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import java.util.Calendar;
 import java.util.Date;
 import static org.junit.Assert.*;
@@ -23,9 +32,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowToast;
-import static org.robolectric.Robolectric.shadowOf;
 import org.robolectric.shadows.ShadowLog;
-
 import org.robolectric.util.FragmentTestUtil;
 
 /**
@@ -34,11 +41,10 @@ import org.robolectric.util.FragmentTestUtil;
  */
 @RunWith(RobolectricTestRunner.class)
 public class DatePickerFragmentTest {
-
-    protected FragmentActivity activity;// = // Robolectric.buildActivity(MainActivity.class).create().get();
+    private final static String TAG = "pocketweightcheck.DatePickerFragmentTest";
+    protected FragmentActivity activity;
     private DatePickerFragment_ fragment;
     private FragmentManager fragmentManager;
-    //private DateUtils_ utils;
     
     public static void startFragment(Fragment fragment) {
         FragmentActivity activity = Robolectric.buildActivity(FragmentActivity.class)
@@ -63,31 +69,16 @@ public class DatePickerFragmentTest {
                 .resume()
                 .get();
 
-//        activity = new FragmentActivity();
-//        shadowOf(activity).callOnCreate(null);
-//        shadowOf(activity).callOnStart();
-//        shadowOf(activity).callOnResume();
-
         fragment = new DatePickerFragment_();
         
         fragmentManager = activity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_activity, fragment);
-        //fragmentTransaction.add(fragment, null);
         fragmentTransaction.commit();
 
         assertNotNull(fragment);
         assertNotNull(fragment.getActivity());
 
-//        fragmentManager = activity.getSupportFragmentManager();
-        // manually inject dependencies -- they have to be public for androidannotations
-        // to work so may as well use this to our advantage.
-        //
-        // we cannot directly test the picker but we can test the logic in the 
-        // onDateSet method...
-    //    utils = DateUtils_.getInstance_(activity);
-      //  fragment.utils = utils;
-   //     utils.context = activity;
         FragmentTestUtil.startFragment(fragment);
         assertNotNull(fragment);
 
@@ -97,9 +88,6 @@ public class DatePickerFragmentTest {
         return activity.getResources().getString(id);
     }
 
-    private void enterDate(int y, int m, int d) {
-        DatePickerFragment fragment = new DatePickerFragment();
-    }
 
     @Test
     public void testDateTooOldFail() throws Exception {
@@ -109,13 +97,13 @@ public class DatePickerFragmentTest {
         cal.setTime(new Date());
         cal.add(Calendar.DAY_OF_YEAR, - DateUtils.MAX_SAMPLE_DATE - 1);
 
-        System.out.println("cal date " + cal.getTime().toString());
+        Log.d(TAG, "cal date " + cal.getTime().toString());
         
         assertNotNull(fragment);
 
         // send for processing
         fragment.show(activity.getSupportFragmentManager(), "tag");
-        fragment.onDateSet(null, //new DatePicker(activity), 
+        fragment.onDateSet(null,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH));
@@ -128,11 +116,13 @@ public class DatePickerFragmentTest {
     public void testDateFutureFail() throws Exception {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_YEAR, 1);// DateUtils.MAX_SAMPLE_DATE - 1);
+        // need date a whole day in the future as we only
+        // send year+month+day for processing... 
+        cal.add(Calendar.DAY_OF_YEAR, 1);
 
-        System.out.println("cal date " + cal.getTime().toString());
+        Log.d(TAG,"cal date " + cal.getTime().toString());
 
-                // send for processing
+        // send for processing
         fragment.show(activity.getSupportFragmentManager(), "tag");
         fragment.onDateSet(null, //new DatePicker(activity), 
                 cal.get(Calendar.YEAR),
@@ -141,9 +131,24 @@ public class DatePickerFragmentTest {
 
         
         assertEquals(getResourceString(R.string.msg_future), ShadowToast.getTextOfLatestToast());
+    }
+    
+    @Test
+    public void testDateAccepted() throws Exception {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+   
+        Log.d(TAG,"cal date " + cal.getTime().toString());
 
-        
-        
+        // send for processing
+        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.onDateSet(null, //new DatePicker(activity), 
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH));
+
+        // check no toast message shown (date accepted)
+        assertNull(ShadowToast.getTextOfLatestToast());
         
     }
 }
