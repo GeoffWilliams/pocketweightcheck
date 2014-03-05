@@ -30,7 +30,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.robolectric.Robolectric;
-import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
@@ -41,13 +41,13 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 public class DAOTest extends TestSupport {
 
     private ConnectionSource cs;
-    private DaoHelper daoHelper;
+    private DaoHelperImpl daoHelper;
     private static final double MAX_SAMPLE_WEIGHT = 111.1d;
     private static final double MIN_SAMPLE_WEIGHT = 66.6d;
 
     public DAOTest() {
         activity = Robolectric.buildActivity(MainActivity.class).create().get();
-        daoHelper = new DaoHelper(activity);
+        daoHelper = new DaoHelperImpl(activity);
         cs = daoHelper.getConnectionSource();
     }
 

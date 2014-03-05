@@ -32,6 +32,9 @@ import org.androidannotations.annotations.EFragment;
 
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringRes;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
+import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 /**
  *
@@ -45,7 +48,7 @@ public class WeightEntryDialog extends DialogFragment {
     public final static int MAX_ALLOWED_WEIGHT = 140;
     public final static int MIN_ALLOWED_WEIGHT = 40;
 
-    private float enteredWeight = 0;
+    private double enteredWeight = 0;
 
     @ViewById(R.id.dateTakenMessage)
     TextView dateTakenMessage;
@@ -69,10 +72,22 @@ public class WeightEntryDialog extends DialogFragment {
 
     @StringRes(R.string.msg_invalid)
     String msgInvalid;
+    
+    @StringRes(R.string.msg_error)
+    String msgError;
 
 
     @Bean
     DateUtils dateUtils;
+    
+    /**
+     * Suggest a class to implement the interface.  During testing this still
+     * happens but we replace the object with a mock instance before starting 
+     * the tests
+     */
+    @Bean(DaoHelperImpl.class)
+    DaoHelper daoHelper;
+    
 //
 //    private Provider<Context> contextProvider;
 //
@@ -80,6 +95,13 @@ public class WeightEntryDialog extends DialogFragment {
 //    public WeightEntryDialog(Provider<Context> contextProvider) {
 //        this.contextProvider = contextProvider;
 //    }
+    
+    private void save() {
+        Log.d(TAG, "saving weight...");
+        Weight weight = new Weight(dateUtils.getDate(), enteredWeight);
+        daoHelper.create(weight);
+        Log.d(TAG, "...weight saved!");
+    }
     
     @Click void cancelButton() {
         dismiss();
@@ -96,7 +118,14 @@ public class WeightEntryDialog extends DialogFragment {
             } else if (enteredWeight > MAX_ALLOWED_WEIGHT) {
                 message = msgTooHeavy;
             } else {
-                message = msgSaved;
+                try {
+                    save();
+                    message = msgSaved;
+                    dismiss();
+                } catch (RuntimeException e) {
+                    Log.e(TAG,"error saving weight",e);
+                    message = msgError;
+                }
             }
         } catch (NumberFormatException e) {
             message = msgInvalid;

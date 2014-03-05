@@ -17,4 +17,5 @@
     <string name="msg_invalid">please enter a number</string>
     <string name="msg_too_old">measurement is too old!</string>
     <string name="msg_future">measurement cannot be in the future</string>
+    <string name="msg_error">Sorry, an error occurred</string>
 </resources>

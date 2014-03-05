@@ -38,119 +38,132 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
 
 /**
  *
  * @author geoff
  */
-@RunWith(RobolectricTestRunner.class)
-public class WeightEntryDialogTest {
-
-    protected Activity activity = Robolectric.buildActivity(MainActivity.class).create().get();
+public class WeightEntryDialogTest extends TestSupport{
 
     private Button okButton;
-    private EditText weightEntryEditText;// = (EditText) activity.findViewById(R.id.weightEntryEditText);
+    private EditText weightEntryEditText;
     private Button cancelButton;
     private WeightEntryDialog_ fragment;
+  
+    // the isVisible() tests always return false whatever the state of the dialogue
+    // so these tests/asserts are commented out for now.
+    
+    public WeightEntryDialogTest(){
+        activity = Robolectric.buildActivity(MainActivity.class).create().get();
+    }
 
-    public static void startFragment(Fragment fragment) {
-        FragmentActivity activity = Robolectric.buildActivity(FragmentActivity.class)
+    
+    @Before
+    public void setUp() {      
+        fragmentActivity = Robolectric.buildActivity(MainActivity.class)
                 .create()
                 .start()
                 .resume()
                 .get();
 
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(fragment, null);
-        fragmentTransaction.commit();
-    }
-
-    /*
-     @InjectView(R.id.timeTakenMessage)
-     private TextView timeTakenMessage;
-    
-     @InjectView(R.id.dateTakenMessage)
-     private TextView dateTakenMessage;
-     */
-    @Before
-    public void setUp() {
-        WeightEntryDialog_ fragment = new WeightEntryDialog_();
-        startFragment(fragment);
+        fragment = new WeightEntryDialog_();
         
+        fragmentManager = fragmentActivity.getSupportFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.main_activity, fragment);
+        fragmentTransaction.commit();
+
+        assertNotNull(fragment);
+        assertNotNull(fragment.getActivity());
+
+        FragmentTestUtil.startFragment(fragment);
+        assertNotNull(fragment);
+
+        // replace the DAO with our mock one that always succeeds...
+        fragment.daoHelper = new MockDaoHelper();
+        
+        // wire up the buttons an fields
         weightEntryEditText = (EditText) fragment.findViewById(R.id.weightEntryEditText);
         okButton = (Button) fragment.findViewById(R.id.okButton);
         cancelButton = (Button) fragment.findViewById(R.id.cancelButton);
-        assertNotNull(fragment);
+
     }
 
-    
-
     private void enterText(String text) {
-
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
         assertTrue(activity != null);
 
         weightEntryEditText.setText(text);
         okButton.performClick();
-
-    }
-
-    private String getResourceString(int id) {
-        return activity.getResources().getString(id);
     }
 
     @Test
     public void testEntryOk() throws Exception {
         enterText("88.2");
-        // pass
+
         ShadowHandler.idleMainLooper();
 
-        assertEquals(getResourceString(R.string.msg_saved), ShadowToast.getTextOfLatestToast());
+        // ensure you get saved message and dialogue is closed 
+        assertEquals(getResourceString(R.string.msg_saved), 
+                ShadowToast.getTextOfLatestToast());
+        //assertFalse(fragment.isVisible());
     }
 
     @Test
     public void testTooLightFail() throws Exception {
         enterText("30");
-        // pass
+
+        // ensure error message and dialogue still open
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_too_light), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msg_too_light), 
+                ShadowToast.getTextOfLatestToast());
+        //assertTrue(fragment.isVisible());
     }
 
     @Test
     public void testTooHeavyFail() throws Exception {
         enterText("150");
-        // pass
+        
+        // ensure error message and dialogue still visible
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_too_heavy), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msg_too_heavy), 
+                ShadowToast.getTextOfLatestToast());
+        //assertTrue(fragment.isVisible());
     }
 
     @Test
     public void testInvalidFail() throws Exception {
         enterText("abc123");
-        // pass
+        
+        // ensure error message and dialogue still visible
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_invalid), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msg_invalid), 
+                ShadowToast.getTextOfLatestToast());
+        //assertTrue(fragment.isVisible());
     }
 
     @Test
     public void testEmptyFail() throws Exception {
         enterText("");
-        // pass
+        
+        // ensure error message and dialogue still visible
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_invalid), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msg_invalid), 
+                ShadowToast.getTextOfLatestToast());
+        //assertTrue(fragment.isVisible());
     }
 
-// Not possible to test this in roboelectric at the moment - gives null
-// pointer exception in call to performClick()...
+    
+    
 //    @Test
 //    public void testCancel() throws Exception {
+//        assertFalse(fragment.isVisible());
+//        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+//        assertTrue(fragment.isVisible());
 //        cancelButton.performClick();
 //        assertFalse(fragment.isVisible());
 //    }
-
-    private void enterTime(int h, int m) {
-        TimePickerFragment fragment = new TimePickerFragment();
-    }
 
 
 }
