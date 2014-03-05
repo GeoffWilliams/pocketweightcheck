@@ -18,9 +18,6 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.app.Activity;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
@@ -31,7 +28,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.robolectric.Robolectric;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
@@ -43,18 +40,15 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
  */
 public class DAOTest extends TestSupport {
 
-    Activity activity = Robolectric.buildActivity(MainActivity.class).create().get();
-    //RuntimeExceptionDao<Weight, Integer> weightDao;
-    //RuntimeExceptionDao<RecordWeight, Integer> recordWeightDao;
-    ConnectionSource cs;
-    DaoHelper daoHelper;
+    private ConnectionSource cs;
+    private DaoHelper daoHelper;
+    private static final double MAX_SAMPLE_WEIGHT = 111.1d;
+    private static final double MIN_SAMPLE_WEIGHT = 66.6d;
 
-    @Before
-    public void setUp() {
+    public DAOTest() {
+        activity = Robolectric.buildActivity(MainActivity.class).create().get();
         daoHelper = new DaoHelper(activity);
         cs = daoHelper.getConnectionSource();
-//        weightDao = daoHelper.getWeightDao();
-//        recordWeightDao = daoHelper.getRecordWeightDao();
     }
 
     /**
@@ -64,6 +58,19 @@ public class DAOTest extends TestSupport {
     public void cleanUp() throws SQLException {
         TableUtils.clearTable(cs, Weight.class);
         TableUtils.clearTable(cs, RecordWeight.class);
+    }
+
+    private void insertSampleData() {
+        // insert a bunch of samples
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(new Date());
+        for (int i = 0; i < DateUtils.MAX_SAMPLE_DATE + 10; i++) {
+            cal.add(Calendar.DAY_OF_YEAR, -1);
+            Double value = MAX_SAMPLE_WEIGHT - i;
+            value = Math.max(MIN_SAMPLE_WEIGHT, value);
+            Weight weight = new Weight(cal.getTime(), value);
+            daoHelper.create(weight);
+        }
     }
 
     @Test
@@ -78,7 +85,7 @@ public class DAOTest extends TestSupport {
             daoHelper.create(sample);
             fail("duplicate record was inserted!");
         } catch (RuntimeException e) {
-           // pass :)
+            // pass :)
         }
     }
 
@@ -98,87 +105,91 @@ public class DAOTest extends TestSupport {
         daoHelper.create(sample);
 
         // delete record
-        assertEquals("1 record should have been deleted", 1, 
+        assertEquals("1 record should have been deleted", 1,
                 daoHelper.delete(sample));
     }
 
     @Test
     public void testSelectByDateAsc() {
-//        QueryBuilder<Weight, Integer> queryBuilder = weightDao.queryBuilder();
-//        OrderBy<Weight, Integer> orderBy = queryBuilder.orderBy("", true)
-//        Where<Account, String> where = queryBuilder.where();
-//        SelectArg selectArg = new SelectArg();
-//// define our query as 'name = ?'
-//        where.eq(Account.NAME_FIELD_NAME, selectArg);
-//// prepare it so it is ready for later query or iterator calls
-//        PreparedQuery<Account> preparedQuery = queryBuilder.prepare();
-        fail();
+        insertSampleData();
+        List<Weight> weights = daoHelper.getWeightByDateAsc();
+        assertNotNull(weights);
+        assertTrue(!weights.isEmpty());
+
+        // no need to test each date is stored in order - that would be testing
+        // the ORM itself.  Just check first/last dates are in the correct order
+        // indicating the ORDER BY clause has been applied properly
+        Date firstEntry = weights.get(0).getSampleTime();
+        Date lastEntry = weights.get(weights.size() - 1).getSampleTime();
+        assertTrue(firstEntry.before(lastEntry));
     }
 
     @Test
     public void testSelectByDateDesc() {
-        fail();
+        insertSampleData();
+        List<Weight> weights = daoHelper.getWeightByDateDesc();
+        assertNotNull(weights);
+        assertTrue(!weights.isEmpty());
+
+        Date firstEntry = weights.get(0).getSampleTime();
+        Date lastEntry = weights.get(weights.size() - 1).getSampleTime();
+        assertTrue(firstEntry.after(lastEntry));
     }
 
     @Test
     public void testInsertRemovesOldData() {
+        // insert a bunch of test records.  Some should be pruned on entry by
+        // the DAO
+        insertSampleData();
 
-        // insert a bunch of samples
-        for (int i = 0; i < DateUtils.MAX_SAMPLE_DATE + 10; i++) {
-            Calendar cal = GregorianCalendar.getInstance();
-            cal.setTime(new Date());
-            cal.add(Calendar.DAY_OF_YEAR, -1);
+        // Ask for all data and ensure there is nothing too old
+        List<Weight> weights = daoHelper.getWeightByDateAsc();
+        assertNotNull(weights);
+        assertFalse(weights.isEmpty());
 
-            Weight weight = new Weight(cal.getTime(), 90.1d);
-            daoHelper.create(weight);
-        }
-
-        // check there is nothing too old saved
+        // check that the earliest record is not before the oldest allowable
+        // date
+        Date oldestEntry = weights.get(0).getSampleTime();
+        Date oldestAllowable = new DateUtils().getOldestAllowable();
+        assertTrue(
+                oldestEntry.equals(oldestAllowable)
+                || oldestEntry.after(oldestAllowable));
     }
 
     @Test
     public void testMaxWeightSaved() {
-        Double maxWeight = 100d;
-        Date date;
-        Calendar cal = GregorianCalendar.getInstance();
-        cal.setTime(new Date());
-        date = cal.getTime();
-        // insert a bunch of samples - 1st one is the max
-        for (int i = 0; i < DateUtils.MAX_SAMPLE_DATE + 10; i++) {
-            if (i > 0) {
-                cal.add(Calendar.DAY_OF_YEAR, -1);
-            }
-
-            Weight weight = new Weight(cal.getTime(), new Double(maxWeight - i));
-            daoHelper.create(weight);
-        }
+        // add a bunch of records...
+        insertSampleData();
+        
+        // mix in our maximum weight as the earliest allowed...
+        Weight maximum = new Weight(
+                new DateUtils().getOldestAllowable(), 
+                Double.valueOf(MAX_SAMPLE_WEIGHT + 10)
+        );
+        daoHelper.create(maximum);
 
         // check the max was saved
         RecordWeight recordWeight = daoHelper.getMaxWeight();
-        assertEquals(recordWeight.getSampleTime(), date);
-        assertEquals(recordWeight.getValue(), maxWeight);
+        assertEquals(recordWeight.getSampleTime(), maximum.getSampleTime());
+        assertEquals(recordWeight.getValue(), maximum.getWeight());
     }
 
     @Test
     public void testMinWeightSaved() {
-        Double minWeight = 60d;
-        Date date;
-        Calendar cal = GregorianCalendar.getInstance();
-        cal.setTime(new Date());
-        date = cal.getTime();
-        // insert a bunch of samples - 1st one is the max
-        for (int i = 0; i < DateUtils.MAX_SAMPLE_DATE + 10; i++) {
-            if (i > 0) {
-                cal.add(Calendar.DAY_OF_YEAR, -1);
-            }
-
-            Weight weight = new Weight(cal.getTime(), new Double(minWeight + i));
-            daoHelper.create(weight);
-        }
-
+        
+        // insert a bunch of data
+        insertSampleData();
+        
+        // mix in our minimum weight as the earliest allowed...
+        Weight minimum = new Weight(
+                new DateUtils().getOldestAllowable(), 
+                Double.valueOf(MIN_SAMPLE_WEIGHT - 10)
+        );
+        daoHelper.create(minimum);
+        
         // check the min was saved
         RecordWeight recordWeight = daoHelper.getMinWeight();
-        assertEquals(recordWeight.getSampleTime(), date);
-        assertEquals(recordWeight.getValue(), minWeight);
+        assertEquals(recordWeight.getSampleTime(), minimum.getSampleTime());
+        assertEquals(recordWeight.getValue(), minimum.getWeight());
     }
 }

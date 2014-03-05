@@ -18,6 +18,7 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -36,14 +37,15 @@ import org.robolectric.shadows.ShadowLog;
 @RunWith(RobolectricTestRunner.class)
 public class TestSupport {
 
-    protected FragmentActivity activity;
+    protected Activity activity;
+    protected FragmentActivity fragmentActivity;
     protected FragmentManager fragmentManager;
     protected FragmentTransaction fragmentTransaction;
     
     
     protected String getResourceString(int id) {
-        Assert.assertNotNull("did your test instantiate activity first?", activity);
-        return activity.getResources().getString(id);
+        Assert.assertNotNull("did your test instantiate activity first?", fragmentActivity);
+        return fragmentActivity.getResources().getString(id);
     }
     
     @Before
@@ -52,13 +54,13 @@ public class TestSupport {
     }
 
     public void startFragment(Fragment fragment) {
-        activity = Robolectric.buildActivity(FragmentActivity.class)
+        fragmentActivity = Robolectric.buildActivity(FragmentActivity.class)
                 .create()
                 .start()
                 .resume()
                 .get();
 
-        fragmentManager = activity.getSupportFragmentManager();
+        fragmentManager = fragmentActivity.getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(fragment, "tag");
         fragmentTransaction.commit();

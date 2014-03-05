@@ -39,7 +39,7 @@ public class DatePickerFragmentTest extends TestSupport {
     
     @Before
     public void setUp() {        
-        activity = Robolectric.buildActivity(MainActivity.class)
+        fragmentActivity = Robolectric.buildActivity(MainActivity.class)
                 .create()
                 .start()
                 .resume()
@@ -47,7 +47,7 @@ public class DatePickerFragmentTest extends TestSupport {
 
         fragment = new DatePickerFragment_();
         
-        fragmentManager = activity.getSupportFragmentManager();
+        fragmentManager = fragmentActivity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_activity, fragment);
         fragmentTransaction.commit();
@@ -75,7 +75,7 @@ public class DatePickerFragmentTest extends TestSupport {
         assertNotNull(fragment);
 
         // send for processing
-        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
         fragment.onDateSet(null,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -96,7 +96,7 @@ public class DatePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
         fragment.onDateSet(null,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -114,7 +114,7 @@ public class DatePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
         fragment.onDateSet(null, 
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),

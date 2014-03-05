@@ -40,7 +40,7 @@ public class TimePickerFragmentTest extends TestSupport {
  
     @Before
     public void setUp() {      
-        activity = Robolectric.buildActivity(MainActivity.class)
+        fragmentActivity = Robolectric.buildActivity(MainActivity.class)
                 .create()
                 .start()
                 .resume()
@@ -48,7 +48,7 @@ public class TimePickerFragmentTest extends TestSupport {
 
         fragment = new TimePickerFragment_();
         
-        fragmentManager = activity.getSupportFragmentManager();
+        fragmentManager = fragmentActivity.getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_activity, fragment);
         fragmentTransaction.commit();
@@ -69,7 +69,7 @@ public class TimePickerFragmentTest extends TestSupport {
         Log.d(TAG, "cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
         fragment.onTimeSet(null, 
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE));
@@ -90,7 +90,7 @@ public class TimePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
         fragment.onTimeSet(null, 
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE));
@@ -112,7 +112,7 @@ public class TimePickerFragmentTest extends TestSupport {
         // put the date inside the dateutils instance singleton and ensure its 
         // accepted.  this is equivalent to setting the date first using the
         // date picker
-        DateUtils_ dateUtils = DateUtils_.getInstance_(activity);
+        DateUtils_ dateUtils = DateUtils_.getInstance_(fragmentActivity);
         assertTrue(dateUtils.setDate(cal.getTime()));
         
         // compute a time that is too old
@@ -122,7 +122,7 @@ public class TimePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(activity.getSupportFragmentManager(), "tag");
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
         fragment.onTimeSet(null, 
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE));

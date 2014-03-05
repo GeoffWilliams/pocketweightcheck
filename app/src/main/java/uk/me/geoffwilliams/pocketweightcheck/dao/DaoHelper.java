@@ -26,9 +26,13 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import android.util.Log;
 import com.j256.ormlite.misc.TransactionManager;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.Callable;
+import uk.me.geoffwilliams.pocketweightcheck.DateUtils;
 //import uk.me.geoffwilliams.pocketweightcheck.R;
 
 /**
@@ -123,6 +127,17 @@ public class DaoHelper extends OrmLiteSqliteOpenHelper {
             }
         }
     }
+    
+    private void deleteOldData() {
+        DeleteBuilder<Weight, Integer> deleteBuilder = weightDao.deleteBuilder();
+        Where<Weight, Integer> where = deleteBuilder.where();
+        try {
+            where.lt(Weight.COL_SAMPLE_TIME, new DateUtils().getOldestAllowable());
+            deleteBuilder.delete();
+        } catch (SQLException e) {
+            throw new RuntimeException("wrapped SQLException", e);
+        }
+    }
 
     public void create(final Weight weight) {
         try {
@@ -133,6 +148,9 @@ public class DaoHelper extends OrmLiteSqliteOpenHelper {
 
                         // insert the new data
                         weightDao.create(weight);
+                        
+                        // remove any data that is too old
+                        deleteOldData();
 
                         // cleanup old data
                         // save the min weight (if needed)
@@ -170,5 +188,25 @@ public class DaoHelper extends OrmLiteSqliteOpenHelper {
             throw new RuntimeException("No data for " + RecordWeight.KEY_MIN_WEIGHT);
         }
         return res.get(0);
+    }
+    
+    private List<Weight> getWeights(boolean ascending) {
+        List<Weight> weights;
+        QueryBuilder<Weight, Integer> queryBuilder = weightDao.queryBuilder();
+        queryBuilder.orderBy(Weight.COL_SAMPLE_TIME, ascending);
+        try {
+            weights = queryBuilder.query();
+        } catch (SQLException e) {
+            throw new RuntimeException("wrapped SQLException", e);
+        }
+        return weights;
+    }
+    
+    
+    public List<Weight> getWeightByDateAsc() {
+        return getWeights(true);
+    }
+    public List<Weight> getWeightByDateDesc() {
+        return getWeights(false);
     }
 }
