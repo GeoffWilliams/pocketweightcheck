@@ -18,11 +18,9 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +42,7 @@ public class TimePickerFragmentTest extends TestSupport {
                 .create()
                 .start()
                 .resume()
+                .visible()
                 .get();
 
         fragment = new TimePickerFragment_();
@@ -63,9 +62,8 @@ public class TimePickerFragmentTest extends TestSupport {
     
     @Test
     public void testTimeAccepted() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-
+        Calendar cal = GregorianCalendar.getInstance();
+        
         Log.d(TAG, "cal date " + cal.getTime().toString());
 
         // send for processing
@@ -76,13 +74,13 @@ public class TimePickerFragmentTest extends TestSupport {
 
         // check no toast message shown (date accepted)
         assertNull(ShadowToast.getTextOfLatestToast());
+        assertFalse(fragment.isVisible());
 
     }
     
     @Test
     public void testTimeFutureFail() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        Calendar cal = GregorianCalendar.getInstance();
         // need date a whole day in the future as we only
         // send year+month+day for processing... 
         cal.add(Calendar.MINUTE, 1);
@@ -96,7 +94,9 @@ public class TimePickerFragmentTest extends TestSupport {
                 cal.get(Calendar.MINUTE));
 
         
-        assertEquals(getResourceString(R.string.msg_future), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msg_future), 
+                ShadowToast.getTextOfLatestToast());
+        assertFalse(fragment.isVisible());
     }    
 
     @Test
@@ -104,8 +104,7 @@ public class TimePickerFragmentTest extends TestSupport {
         // since we are only setting the TIME in the dialog
         // we must first set the DATE so that decreasing by
         // one minute in TIME will cause rejection
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        Calendar cal = GregorianCalendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, - DateUtils.MAX_SAMPLE_DATE);
         Log.d(TAG, "Computed old DATE: " + cal.getTime().toString());
         
@@ -128,6 +127,8 @@ public class TimePickerFragmentTest extends TestSupport {
                 cal.get(Calendar.MINUTE));
 
         
-        assertEquals(getResourceString(R.string.msg_too_old), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msg_too_old), 
+                ShadowToast.getTextOfLatestToast());
+        assertFalse(fragment.isVisible());
     }    
 }

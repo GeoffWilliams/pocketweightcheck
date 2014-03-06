@@ -21,7 +21,7 @@ package uk.me.geoffwilliams.pocketweightcheck;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,12 +43,13 @@ public class DatePickerFragmentTest extends TestSupport {
                 .create()
                 .start()
                 .resume()
+                .visible()
                 .get();
 
         fragment = new DatePickerFragment_();
         
         fragmentManager = fragmentActivity.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_activity, fragment);
         fragmentTransaction.commit();
 
@@ -66,8 +67,7 @@ public class DatePickerFragmentTest extends TestSupport {
     public void testDateTooOldFail() throws Exception {
 
         // work out a date that is too old
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        Calendar cal = GregorianCalendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, - DateUtils.MAX_SAMPLE_DATE - 1);
 
         Log.d(TAG, "cal date " + cal.getTime().toString());
@@ -82,13 +82,12 @@ public class DatePickerFragmentTest extends TestSupport {
                 cal.get(Calendar.DAY_OF_MONTH));
 
         assertEquals(getResourceString(R.string.msg_too_old), ShadowToast.getTextOfLatestToast());
-
+        assertFalse(fragment.isVisible());
     }
 
     @Test
     public void testDateFutureFail() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        Calendar cal = GregorianCalendar.getInstance();
         // need date a whole day in the future as we only
         // send year+month+day for processing... 
         cal.add(Calendar.DAY_OF_YEAR, 1);
@@ -104,12 +103,12 @@ public class DatePickerFragmentTest extends TestSupport {
 
         
         assertEquals(getResourceString(R.string.msg_future), ShadowToast.getTextOfLatestToast());
+        assertFalse(fragment.isVisible());
     }
     
     @Test
     public void testDateAccepted() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        Calendar cal = GregorianCalendar.getInstance();
    
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
@@ -122,6 +121,6 @@ public class DatePickerFragmentTest extends TestSupport {
 
         // check no toast message shown (date accepted)
         assertNull(ShadowToast.getTextOfLatestToast());
-        
+        assertFalse(fragment.isVisible());
     }
 }

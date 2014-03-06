@@ -65,6 +65,7 @@ public class WeightEntryDialogTest extends TestSupport{
                 .create()
                 .start()
                 .resume()
+                .visible()
                 .get();
 
         fragment = new WeightEntryDialog_();
@@ -107,7 +108,7 @@ public class WeightEntryDialogTest extends TestSupport{
         // ensure you get saved message and dialogue is closed 
         assertEquals(getResourceString(R.string.msg_saved), 
                 ShadowToast.getTextOfLatestToast());
-        //assertFalse(fragment.isVisible());
+        assertFalse(fragment.isVisible());
     }
 
     @Test
@@ -118,7 +119,7 @@ public class WeightEntryDialogTest extends TestSupport{
         ShadowHandler.idleMainLooper();
         assertEquals(getResourceString(R.string.msg_too_light), 
                 ShadowToast.getTextOfLatestToast());
-        //assertTrue(fragment.isVisible());
+        assertTrue(fragment.isVisible());
     }
 
     @Test
@@ -129,7 +130,7 @@ public class WeightEntryDialogTest extends TestSupport{
         ShadowHandler.idleMainLooper();
         assertEquals(getResourceString(R.string.msg_too_heavy), 
                 ShadowToast.getTextOfLatestToast());
-        //assertTrue(fragment.isVisible());
+        assertTrue(fragment.isVisible());
     }
 
     @Test
@@ -140,7 +141,7 @@ public class WeightEntryDialogTest extends TestSupport{
         ShadowHandler.idleMainLooper();
         assertEquals(getResourceString(R.string.msg_invalid), 
                 ShadowToast.getTextOfLatestToast());
-        //assertTrue(fragment.isVisible());
+        assertTrue(fragment.isVisible());
     }
 
     @Test
@@ -151,19 +152,18 @@ public class WeightEntryDialogTest extends TestSupport{
         ShadowHandler.idleMainLooper();
         assertEquals(getResourceString(R.string.msg_invalid), 
                 ShadowToast.getTextOfLatestToast());
-        //assertTrue(fragment.isVisible());
+        assertTrue(fragment.isVisible());
     }
 
     
     
-//    @Test
-//    public void testCancel() throws Exception {
-//        assertFalse(fragment.isVisible());
-//        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
-//        assertTrue(fragment.isVisible());
-//        cancelButton.performClick();
-//        assertFalse(fragment.isVisible());
-//    }
+    @Test
+    public void testCancel() throws Exception {
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        assertTrue(fragment.isVisible());
+        cancelButton.performClick();
+        assertFalse(fragment.isVisible());
+    }
 
 
 }
