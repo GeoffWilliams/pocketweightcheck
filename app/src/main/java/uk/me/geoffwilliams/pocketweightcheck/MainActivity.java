@@ -19,10 +19,12 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.util.Log;
+import android.view.MenuItem;
 import org.androidannotations.annotations.EActivity;
 
 
@@ -53,6 +55,31 @@ public class MainActivity extends FragmentActivity {
         return true;
     }
 
+     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+         Intent intent;
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.enterWeightItem:
+                enterDataIfNeeded();
+                return true;
+            case R.id.importExportItem:
+                // not supported yet
+                return true;
+            case R.id.viewItem:
+                intent = new Intent(this, ViewDataActivity_.class);
+                startActivity(intent);
+                return true;
+            case R.id.settingsItem:
+
+   
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    
     public void enterDataIfNeeded() {
         if (true) {
             Log.d(TAG, "show weight entry dialog...");
