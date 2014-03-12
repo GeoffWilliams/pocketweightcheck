@@ -22,6 +22,9 @@ package uk.me.geoffwilliams.pocketweightcheck.dao;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.j256.ormlite.support.ConnectionSource;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -29,20 +32,44 @@ import java.util.List;
  * @author geoff
  */
 public class MockDaoHelper implements DaoHelper {
-    
+    public final static int SAMPLE_SIZE = 30;
+    public final static double SAMPLE_WEIGHT_INITIAL = 111.1d;
     private final static String TAG = "pocketweightcheck.MockDaoHelper";
-
+    private List<Weight> sampleData = new ArrayList<Weight>();
+    
+    public MockDaoHelper() {
+        Calendar cal = GregorianCalendar.getInstance();
+        Weight weight;
+        double currentWeight = SAMPLE_WEIGHT_INITIAL;
+        for (int i = 0 ; i < SAMPLE_SIZE ; i++) {
+            weight = new Weight(cal.getTime(), currentWeight);
+            
+            // change weight and time ready for next sample
+            cal.add(Calendar.DAY_OF_YEAR, -1);
+            currentWeight -= 1;
+            
+            sampleData.add(weight);
+        }
+    }
+    
     @Override
     public void create(Weight weight) {
+        sampleData.add(weight);
         Log.i(TAG, "MOCK saved weight {" + weight.getSampleTime().toString() 
                 + "," + weight.getWeight() + "}");
     }
 
     @Override
-    public int delete(Weight weight) {
-        Log.i(TAG, "MOCK deleted weight {" + weight.getSampleTime().toString() 
+    public int delete(Weight weight) {        
+        int deleteCount;
+        Log.i(TAG, "MOCK requested deleted weight {" + weight.getSampleTime().toString() 
                 + "," + weight.getWeight() + "}");
-        return 1;
+        if (sampleData.remove(weight)) {
+            deleteCount = 1;
+        } else {
+            deleteCount = 0;
+        }
+        return deleteCount;
     }
 
     @Override
@@ -60,9 +87,13 @@ public class MockDaoHelper implements DaoHelper {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * Make up 30 records of data and return them
+     * @return 
+     */
     @Override
     public List<Weight> getWeightByDateDesc() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return sampleData;
     }
 
     @Override

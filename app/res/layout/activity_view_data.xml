@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:scrollbars="none"
+    android:layout_weight="1">
+    <TableLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" 
+        android:layout_gravity="center"
+        android:stretchColumns="*"
+        android:id="@+id/weightTableLayout">
+        <TableRow android:layout_width="match_parent">
+            <TextView
+                android:id="@+id/dateColLabel"
+                android:text="Date"
+                android:textStyle="bold"
+                android:padding="2px"/> 
+            <TextView
+                android:id="@+id/weightColLabel"
+                android:text="Weight" 
+                android:textStyle="bold"
+                android:padding="2px"/>
+        </TableRow>
+    </TableLayout>
+</ScrollView>

@@ -18,26 +18,16 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.app.Activity;
-import android.app.DialogFragment;
 import android.widget.Button;
 import android.widget.EditText;
-import java.util.Calendar;
-import java.util.Date;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowHandler;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.FragmentTestUtil;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
 
 /**
