@@ -39,6 +39,8 @@ public class Weight {
     @DatabaseField(canBeNull = false, columnName = COL_WEIGHT)
     private Double weight;
 
+    private Double trend = -999d;
+    
     public Weight() {}
     
     public Weight(Date date, Double weight) {
@@ -60,6 +62,14 @@ public class Weight {
 
     public void setWeight(Double weight) {
         this.weight = weight;
+    }
+
+    public Double getTrend() {
+        return trend;
+    }
+
+    public void setTrend(Double trend) {
+        this.trend = trend;
     }
     
     

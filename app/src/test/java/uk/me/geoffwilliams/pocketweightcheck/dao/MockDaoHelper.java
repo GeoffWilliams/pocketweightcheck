@@ -24,6 +24,7 @@ import android.util.Log;
 import com.j256.ormlite.support.ConnectionSource;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -90,7 +91,9 @@ public class MockDaoHelper implements DaoHelper {
 
     @Override
     public List<Weight> getWeightByDateAsc() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Weight> reversed = sampleData;
+        Collections.reverse(reversed);
+        return reversed;
     }
 
     /**

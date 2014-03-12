@@ -25,7 +25,14 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 
 
 @EActivity(R.layout.activity_main)
@@ -36,8 +43,18 @@ public class MainActivity extends FragmentActivity {
 //    @Inject 
 //    private Provider<FragmentManager> fragmentManagerProvider;
 //    
+    @Bean(DaoHelperImpl.class)
+    DaoHelper daoHelper;
 
+    @ViewById(R.id.graphLayout)
+    LinearLayout graphLayout;
+    
+    @ViewById(R.id.noDataLayout)
+    LinearLayout noDataLayout;
+    
     private WeightEntryDialog weightEntryDialog;
+    private GraphController graphController;
+    
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +93,27 @@ public class MainActivity extends FragmentActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    private void toggleGraph(boolean show) {
+        graphLayout.setVisibility( (show) ? View.VISIBLE: View.INVISIBLE);
+        noDataLayout.setVisibility((show) ? View.INVISIBLE: View.VISIBLE);
+        
+    }
+    
+    
+    @AfterViews
+    public void loadData() {
+        if (Settings.isLoadData() && ! daoHelper.getWeightByDateAsc().isEmpty()) {
+            toggleGraph(true);
+            graphController = new GraphController();
+            graphController.setupGraph(this);
+            graphController.updateGraph(daoHelper.getWeightByDateAsc(), this);
+            graphLayout.removeAllViews();
+            graphLayout.addView(graphController.getChart());
+        } else {
+            toggleGraph(false);
         }
     }
 

@@ -19,23 +19,59 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
 
-@RunWith(RobolectricTestRunner.class)
-public class MainActivityTest {
+public class MainActivityTest extends TestSupport {
 
-    @org.junit.Test
-    public void testSomething() throws Exception {
-        Activity activity = Robolectric.buildActivity(MainActivity.class).create().get();
-        assertTrue(activity != null);
+    LinearLayout graphLayout;
+    LinearLayout noDataLayout;
+    DaoHelper daoHelper = new MockDaoHelper();
+    MainActivity_ mainActivity;
+    
+    @Before
+    public void setUp() throws Exception {
+        
+        Settings.setLoadData(false);
+        
+        mainActivity = (MainActivity_) Robolectric.buildActivity(MainActivity_.class)
+                .create()
+                .start()
+                .resume()
+                .visible()
+                .get();
+        assertNotNull(mainActivity);
+        
+        mainActivity.daoHelper = daoHelper;
+        
+        graphLayout = (LinearLayout) mainActivity.findViewById(R.id.graphLayout);
+        noDataLayout = (LinearLayout) mainActivity.findViewById(R.id.noDataLayout);
+        
+        Settings.setLoadData(true);
+        mainActivity.loadData();
 
-        TextView mytextview = (TextView) activity.findViewById(R.id.mytextview);
-
-        assertEquals(
-                "Coming soon...", mytextview.getText().toString());
+    }
+    
+    @Test
+    public void testNoDataNoGraph() {
+        daoHelper.deleteAllData();
+        mainActivity.loadData();
+        assertEquals(View.INVISIBLE, graphLayout.getVisibility());
+        assertEquals(View.VISIBLE, noDataLayout.getVisibility());
+    }
+    
+    @Test
+    public void testDataGraph() {
+        assertEquals(View.VISIBLE, graphLayout.getVisibility());
+        assertEquals(View.INVISIBLE, noDataLayout.getVisibility());
     }
 }
