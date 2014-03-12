@@ -37,7 +37,7 @@ public class MockDaoHelper implements DaoHelper {
     private final static String TAG = "pocketweightcheck.MockDaoHelper";
     private List<Weight> sampleData = new ArrayList<Weight>();
     
-    public MockDaoHelper() {
+    private void loadData() {
         Calendar cal = GregorianCalendar.getInstance();
         Weight weight;
         double currentWeight = SAMPLE_WEIGHT_INITIAL;
@@ -50,6 +50,12 @@ public class MockDaoHelper implements DaoHelper {
             
             sampleData.add(weight);
         }
+        
+    }
+    
+    
+    public MockDaoHelper() {
+        loadData();
     }
     
     @Override
@@ -104,6 +110,11 @@ public class MockDaoHelper implements DaoHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqld, ConnectionSource cs, int i, int i1) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void deleteAllData() {
+         sampleData = new ArrayList<Weight>();
     }
     
 }

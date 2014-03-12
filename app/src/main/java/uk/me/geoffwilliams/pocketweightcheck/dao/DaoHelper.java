@@ -45,4 +45,5 @@ public interface DaoHelper {
 
     public void onUpgrade(SQLiteDatabase sqld, ConnectionSource cs, int i, int i1);
     
+    public void deleteAllData();
 }

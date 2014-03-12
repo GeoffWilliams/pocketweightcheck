@@ -36,8 +36,9 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 import android.view.View;
 import android.util.Log;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.res.StringRes;
 import uk.me.geoffwilliams.pocketweightcheck.Settings;
-
 
 /**
  *
@@ -45,79 +46,125 @@ import uk.me.geoffwilliams.pocketweightcheck.Settings;
  */
 @EActivity(R.layout.activity_view_data)
 public class ViewDataActivity extends FragmentActivity {
-    
+
     @ViewById(R.id.weightTableLayout)
     TableLayout layout;
-    
-     /**
-     * Suggest a class to implement the interface.  During testing this still
-     * happens but we replace the object with a mock instance before starting 
+
+    /**
+     * Suggest a class to implement the interface. During testing this still
+     * happens but we replace the object with a mock instance before starting
      * the tests
      */
     @Bean(DaoHelperImpl.class)
     DaoHelper daoHelper;
-    
+
+    @StringRes(R.string.msg_no_data)
+    String msgNoData;
+
+    @StringRes(R.string.date)
+    String dateLabel;
+
+    @StringRes(R.string.weight)
+    String weightLabel;
+
     private java.text.DateFormat df;
     private static final String TAG = "pocketweightcheck.ViewDataActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); //To change body of generated methods, choose Tools | Templates.
-        
+
         Log.d(TAG, "inside onCreate()");
         // locale formatted date
         df = DateFormat.getDateFormat(this);
-        if (Settings.isProduction()) {
-            loadData();
-        }
     }
-    
+
+    private TableRow addRow() {
+        TableRow row = new TableRow(this);
+        layout.addView(row);
+        return row;
+    }
+
+    private void tableHeaders() {
+        TableRow row = addRow();
+
+        // date
+        TextView tv = new TextView(this);
+        tv.setText(dateLabel);
+        row.addView(tv);
+
+        // weight
+        tv = new TextView(this);
+        tv.setText(weightLabel);
+        row.addView(tv);
+    }
+
+    @AfterViews
     /*package*/ void loadData() {
-        
-        TextView dateTextView;
-        TextView weightTextView;
-        ImageButton deleteButton;
-        List<Weight> weights = daoHelper.getWeightByDateDesc();
+        if (Settings.isLoadData()) {
+            Log.d(TAG, "loading data...");
 
-        
-        for (final Weight weight : weights) {
-            final TableRow row = new TableRow(this);
-            
-            // FIXME deprecated...
-            row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
-            
-            dateTextView = new TextView(this);
-            weightTextView = new TextView(this);
-            String datePretty = df.format(weight.getSampleTime());
-            
-            dateTextView.setText(datePretty);
-            dateTextView.setPadding(2,2,2,2);
-                          
-            weightTextView.setText(String.valueOf(weight.getWeight()));
-            weightTextView.setPadding(2,2,2,2);
-            
-            // delete row icon
-            deleteButton = new ImageButton(this);
-            deleteButton.setImageResource(R.drawable.delete);
-            deleteButton.setBackgroundColor(Color.BLACK);
-            deleteButton.setOnClickListener(
-                new View.OnClickListener() {
-                    private final Weight targetWeight = weight;
-                    private final View targetRow = row;
-                    @Override
-                    public void onClick(View v) {
-                        daoHelper.delete(targetWeight);
-                        layout.removeView(targetRow);
-                                
+            // delete any existing display
+            layout.removeAllViews();
+
+            List<Weight> weights = daoHelper.getWeightByDateDesc();
+
+            if (weights.isEmpty()) {
+                TableRow row = addRow();
+                TextView tv = new TextView(this);
+                tv.setText(msgNoData);
+                row.addView(tv);
+            } else {
+                //  headers
+                tableHeaders();
+
+                // data
+                TextView dateTextView;
+                TextView weightTextView;
+                ImageButton deleteButton;
+
+                for (final Weight weight : weights) {
+                    final TableRow row = addRow();
+
+                    // fixme
+ //                   row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                    dateTextView = new TextView(this);
+                    weightTextView = new TextView(this);
+                    String datePretty = df.format(weight.getSampleTime());
+
+                    dateTextView.setText(datePretty);
+                    dateTextView.setPadding(2, 2, 2, 2);
+
+                    weightTextView.setText(String.valueOf(weight.getWeight()));
+                    weightTextView.setPadding(2, 2, 2, 2);
+
+                    // delete row icon
+                    deleteButton = new ImageButton(this);
+                    deleteButton.setImageResource(R.drawable.delete);
+                    deleteButton.setBackgroundColor(Color.BLACK);
+                    deleteButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                private final Weight targetWeight = weight;
+                                private final View targetRow = row;
+
+                                @Override
+                                public void onClick(View v) {
+                                    daoHelper.delete(targetWeight);
+                                    layout.removeView(targetRow);
+
+                                }
+                            });
+
+                    // attach the row to gui
+                    row.addView(dateTextView);
+                    row.addView(weightTextView);
+                    row.addView(deleteButton);
+
+                    Log.d(TAG, "added row...");
                 }
-            });
-            
-            // attach the row to gui
-            row.addView(dateTextView);
-            row.addView(weightTextView);
-            row.addView(deleteButton);
-            layout.addView(row);
+            }
+            Log.d(TAG, "...done loading data!");
         }
     }
-
 }

@@ -213,4 +213,15 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     public List<Weight> getWeightByDateDesc() {
         return getWeights(false);
     }
+
+    @Override
+    public void deleteAllData() {
+        try {
+            TableUtils.clearTable(connectionSource, Weight.class);
+            TableUtils.clearTable(connectionSource, RecordWeight.class);
+    
+        } catch (SQLException e) {
+            throw new RuntimeException("Wrapped exception", e);
+        }
+    }
 }

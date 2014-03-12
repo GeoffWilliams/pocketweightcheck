@@ -8,7 +8,9 @@
     <string name="weight_entry_message">Please enter weight in KG</string>
     <string name="weight_entry_date_message">When was this sample taken?</string>
     <string name="now">now</string>
-    <string name="Earlier">Earlier</string>
+    <string name="earlier">Earlier</string>
+    <string name="date">Date</string>
+    <string name="weight">Weight</string>
 
 
     <string name="msg_saved">saved</string>
@@ -18,4 +20,5 @@
     <string name="msg_too_old">measurement is too old!</string>
     <string name="msg_future">measurement cannot be in the future</string>
     <string name="msg_error">Sorry, an error occurred</string>
+    <string name="msg_no_data">No data yet</string>
 </resources>

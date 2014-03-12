@@ -30,6 +30,7 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.TextView;
 import org.robolectric.util.ActivityController;
 
 /**
@@ -45,7 +46,7 @@ public class ViewDataActivityTest extends TestSupport {
 
     @Before
     public void setUp() {
-        Settings.setProduction(false);
+        Settings.setLoadData(false);
 
         viewDataActivity = Robolectric.buildActivity(ViewDataActivity_.class)
                 .create()
@@ -59,6 +60,7 @@ public class ViewDataActivityTest extends TestSupport {
         Log.d(TAG, "*** injected daoHelper ***");
         // inject mock DAO before the activity starts trying to load data...
         viewDataActivity.daoHelper = new MockDaoHelper();
+        Settings.setLoadData(true);
 
         layout = (TableLayout) viewDataActivity.findViewById(R.id.weightTableLayout);
         assertNotNull(layout);
@@ -67,6 +69,22 @@ public class ViewDataActivityTest extends TestSupport {
 
     }
 
+    @Test
+    public void testEmpty() {
+        // unload all data
+        viewDataActivity.daoHelper.deleteAllData();
+        
+        // reload table
+        viewDataActivity.loadData();
+        
+        // check we get the right message
+        TableRow row = (TableRow) layout.getChildAt(0);
+        assertNotNull(row);
+        TextView message = (TextView) row.getChildAt(0);
+        assertNotNull(message);
+        assertEquals(getResourceString(R.string.msg_no_data), message.getText());
+    }
+    
     /**
      * Check listing displayed ok
      */

@@ -44,8 +44,7 @@ public class TestSupport {
     
     
     protected String getResourceString(int id) {
-        Assert.assertNotNull("did your test instantiate activity first?", fragmentActivity);
-        return fragmentActivity.getResources().getString(id);
+        return Robolectric.application.getResources().getString(id);
     }
     
     @Before

@@ -108,6 +108,20 @@ public class DAOTest extends TestSupport {
         assertEquals("1 record should have been deleted", 1,
                 daoHelper.delete(sample));
     }
+    
+    @Test
+    public void testDeleteAllSucceed() {
+        Weight sample = new Weight(new Date(), 88.8d);
+
+        // insert record
+        daoHelper.create(sample);
+        
+        // delete all data
+        daoHelper.deleteAllData();
+        // check all tables empty
+        assertEquals("all weights must be deleted",
+                0, daoHelper.getWeightByDateAsc().size());
+    }
 
     @Test
     public void testSelectByDateAsc() {
