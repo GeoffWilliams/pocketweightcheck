@@ -78,7 +78,7 @@ public class WeightEntryDialog extends DialogFragment {
     @Bean
     DateUtils dateUtils;
     
-    private DataChangeListener mainActivity;
+//    private DataChangeListener mainActivity;
     
     /**
      * Suggest a class to implement the interface.  During testing this still
@@ -94,8 +94,8 @@ public class WeightEntryDialog extends DialogFragment {
         daoHelper.create(weight);
         Log.d(TAG, "...weight saved!");
         
-        // update the main GUI
-        mainActivity.onDataChanged();
+//        // update the main GUI
+//        mainActivity.onDataChanged();
     }
     
     @Click void cancelButton() {
@@ -157,16 +157,16 @@ public class WeightEntryDialog extends DialogFragment {
                 .format(dateUtils.getDate()));
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mainActivity = (DataChangeListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement RefreshGraph");
-        }
-    }
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+//        try {
+//            mainActivity = (DataChangeListener) activity;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                    + " must implement RefreshGraph");
+//        }
+//    }
 
     
 }
