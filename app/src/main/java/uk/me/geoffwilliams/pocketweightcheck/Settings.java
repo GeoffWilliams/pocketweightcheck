@@ -27,26 +27,34 @@ import java.util.Date;
 public class Settings {
 
     /**
-     * Automatically load data in activities (useful for testing)
+     * Automatically load data in activities (used for testing)
      */
     private static boolean loadData = true;
     
+    /**
+     * Automatically prompt for data entry (used for testing)
+     */
     private static boolean promptForDataEntry = true;
 
     /**
      * Maximum weight to accept (KG)
      */
-    public static int maxAllowedWeight = 140;
+    private static int maxAllowedWeight = 140;
     
     /**
      * Minimum weight to accept (KG)
      */
-    public static int minAllowedWeight = 40;
+    private static int minAllowedWeight = 40;
     
     /*
      * Maximum age to accept for entered data (days) 
      */
-    public static int maxSampleAge = 30;
+    private static int maxSampleAge = 30;
+    
+    /**
+     * Minimum amount of points to allow graph to display
+     */
+    private static int graphMinDataPoints = 2;
     
     /**
      * maximum sample age expressed as a date
@@ -96,6 +104,10 @@ public class Settings {
 
     public static void setPromptForDataEntry(boolean promptForDataEntry) {
         Settings.promptForDataEntry = promptForDataEntry;
+    }
+
+    public static int getGraphMinDataPoints() {
+        return graphMinDataPoints;
     }
 
     

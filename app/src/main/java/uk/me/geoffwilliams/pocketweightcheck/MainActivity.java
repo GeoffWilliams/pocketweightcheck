@@ -107,7 +107,8 @@ public class MainActivity extends FragmentActivity {
     
     @AfterViews
     public void loadData() {
-        if (Settings.isLoadData() && ! daoHelper.getWeightByDateAsc().isEmpty()) {
+        if (Settings.isLoadData() && 
+                daoHelper.getWeightCount() >= Settings.getGraphMinDataPoints()) {
             toggleGraph(true);
             graphController = new GraphController();
             graphController.setupGraph(this);
@@ -120,14 +121,10 @@ public class MainActivity extends FragmentActivity {
     }
 
     
-    public void showWeightEntryDialog() {
-    
+    public void showWeightEntryDialog() {   
         Log.d(TAG, "show weight entry dialog...");
-
         weightEntryDialog.show(getSupportFragmentManager(), TAG);
         Log.d(TAG, "..control returned to main thread");
-
-
     }
     
     /**

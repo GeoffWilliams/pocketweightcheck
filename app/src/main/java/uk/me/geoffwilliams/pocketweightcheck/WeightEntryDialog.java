@@ -102,9 +102,9 @@ public class WeightEntryDialog extends DialogFragment {
         try {
             enteredWeight = Float.parseFloat(weightEntryEditText.getText().toString());
 
-            if (enteredWeight < Settings.minAllowedWeight) {
+            if (enteredWeight < Settings.getMinAllowedWeight()) {
                 message = msgTooLight;
-            } else if (enteredWeight > Settings.maxAllowedWeight) {
+            } else if (enteredWeight > Settings.getMaxAllowedWeight()) {
                 message = msgTooHeavy;
             } else {
                 try {

@@ -20,6 +20,7 @@ package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -40,7 +41,7 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 public class MainActivityTest extends TestSupport {
-
+    private static final String TAG = "pocketweightcheck.MainActivityTest";
     LinearLayout graphLayout;
     LinearLayout noDataLayout;
     DaoHelper daoHelper = new MockDaoHelper();
@@ -73,16 +74,23 @@ public class MainActivityTest extends TestSupport {
     @Test
     public void testNoDataNoGraph() {
         daoHelper.deleteAllData();
-        mainActivity.loadData();
+        
         // should be no data until at least 2 points loaded
-        for (int i = 0 ; i < 3 ; i++) {
-            
-            // 3x runs - 0 entries, 1 entries, 2 entries
-            
+        for (int i = 0 ; i < Settings.getGraphMinDataPoints() ; i++) {
+            mainActivity.loadData();
+            // 2x runs - 0 entries, 1 entries
+            Log.d(TAG, "data size: " + daoHelper.getWeightCount());
             assertEquals(View.INVISIBLE, graphLayout.getVisibility());
             assertEquals(View.VISIBLE, noDataLayout.getVisibility());
             daoHelper.create(new Weight(new Date(), 88.9d));
         }
+        
+        // the last call to daoHelper.create() should trigger displaying the
+        // graph...
+        mainActivity.loadData();
+        assertEquals(View.VISIBLE, graphLayout.getVisibility());
+        assertEquals(View.INVISIBLE, noDataLayout.getVisibility());
+
     }
     
     @Test
