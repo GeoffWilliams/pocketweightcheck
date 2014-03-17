@@ -18,6 +18,7 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
+import android.app.Activity;
 import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -77,6 +78,8 @@ public class WeightEntryDialog extends DialogFragment {
     @Bean
     DateUtils dateUtils;
     
+    private RefreshGraph mainActivity;
+    
     /**
      * Suggest a class to implement the interface.  During testing this still
      * happens but we replace the object with a mock instance before starting 
@@ -90,6 +93,9 @@ public class WeightEntryDialog extends DialogFragment {
         Weight weight = new Weight(dateUtils.getDate(), enteredWeight);
         daoHelper.create(weight);
         Log.d(TAG, "...weight saved!");
+        
+        // update the main GUI
+        mainActivity.onDataUpdated();
     }
     
     @Click void cancelButton() {
@@ -156,4 +162,16 @@ public class WeightEntryDialog extends DialogFragment {
                 .format(dateUtils.getDate()));
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mainActivity = (RefreshGraph) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement RefreshGraph");
+        }
+    }
+
+    
 }

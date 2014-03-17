@@ -41,18 +41,11 @@ public class WeightEntryDialogTest extends TestSupport{
     private EditText weightEntryEditText;
     private Button cancelButton;
     private WeightEntryDialog_ fragment;
-    private Activity activity;
-  
-    // the isVisible() tests always return false whatever the state of the dialogue
-    // so these tests/asserts are commented out for now.
-    
-    public WeightEntryDialogTest(){
-        activity = Robolectric.buildActivity(MainActivity.class).create().get();
-    }
-
     
     @Before
     public void setUp() {      
+        Settings.setRefreshUi(false);
+        
         fragmentActivity = Robolectric.buildActivity(MainActivity.class)
                 .create()
                 .start()
@@ -85,7 +78,7 @@ public class WeightEntryDialogTest extends TestSupport{
 
     private void enterText(String text) {
         fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
-        assertTrue(activity != null);
+        assertTrue(fragmentActivity != null);
 
         weightEntryEditText.setText(text);
         okButton.performClick();

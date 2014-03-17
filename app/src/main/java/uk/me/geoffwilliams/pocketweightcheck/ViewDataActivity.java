@@ -18,8 +18,10 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.view.ViewGroup;
@@ -69,7 +71,8 @@ public class ViewDataActivity extends FragmentActivity {
 
     private java.text.DateFormat df;
     private static final String TAG = "pocketweightcheck.ViewDataActivity";
-
+    private RefreshGraph mainActivity;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); //To change body of generated methods, choose Tools | Templates.
@@ -153,6 +156,10 @@ public class ViewDataActivity extends FragmentActivity {
                                     daoHelper.delete(targetWeight);
                                     layout.removeView(targetRow);
 
+                                    // update graph if not in unit test...
+                                    if (mainActivity != null) {
+                                        mainActivity.onDataUpdated();
+                                    }
                                 }
                             });
 
@@ -165,6 +172,17 @@ public class ViewDataActivity extends FragmentActivity {
                 }
             }
             Log.d(TAG, "...done loading data!");
+        }
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        try {
+            mainActivity = (RefreshGraph) fragment;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(fragment.toString()
+                    + " must implement RefreshGraph");
         }
     }
 }

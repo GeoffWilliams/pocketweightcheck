@@ -52,6 +52,8 @@ public class MainActivityTest extends TestSupport {
         // turn off automatic actions first...
         Settings.setPromptForDataEntry(false);
         Settings.setLoadData(false);
+        // needs fixing after previous tests have run..
+        Settings.setRefreshUi(true);
         
         mainActivity = (MainActivity_) Robolectric.buildActivity(MainActivity_.class)
                 .create()
@@ -67,7 +69,7 @@ public class MainActivityTest extends TestSupport {
         noDataLayout = (LinearLayout) mainActivity.findViewById(R.id.noDataLayout);
         
         Settings.setLoadData(true);
-        mainActivity.loadData();
+        mainActivity.onDataUpdated();
 
     }
     
@@ -77,7 +79,7 @@ public class MainActivityTest extends TestSupport {
         
         // should be no data until at least 2 points loaded
         for (int i = 0 ; i < Settings.getGraphMinDataPoints() ; i++) {
-            mainActivity.loadData();
+            mainActivity.onDataUpdated();
             // 2x runs - 0 entries, 1 entries
             Log.d(TAG, "data size: " + daoHelper.getWeightCount());
             assertEquals(View.INVISIBLE, graphLayout.getVisibility());
@@ -87,7 +89,7 @@ public class MainActivityTest extends TestSupport {
         
         // the last call to daoHelper.create() should trigger displaying the
         // graph...
-        mainActivity.loadData();
+        mainActivity.onDataUpdated();
         assertEquals(View.VISIBLE, graphLayout.getVisibility());
         assertEquals(View.INVISIBLE, noDataLayout.getVisibility());
 

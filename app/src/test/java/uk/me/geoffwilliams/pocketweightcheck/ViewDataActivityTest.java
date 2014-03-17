@@ -47,7 +47,8 @@ public class ViewDataActivityTest extends TestSupport {
     @Before
     public void setUp() {
         Settings.setLoadData(false);
-
+        Settings.setRefreshUi(false);
+        
         viewDataActivity = Robolectric.buildActivity(ViewDataActivity_.class)
                 .create()
                 .start()
@@ -60,6 +61,8 @@ public class ViewDataActivityTest extends TestSupport {
         Log.d(TAG, "*** injected daoHelper ***");
         // inject mock DAO before the activity starts trying to load data...
         viewDataActivity.daoHelper = new MockDaoHelper();
+        
+        // enable loading data now the mock is in place
         Settings.setLoadData(true);
 
         layout = (TableLayout) viewDataActivity.findViewById(R.id.weightTableLayout);

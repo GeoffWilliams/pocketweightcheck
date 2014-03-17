@@ -36,7 +36,7 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements RefreshGraph {
 
     private final static String TAG = "pocketweightcheck";
     
@@ -53,7 +53,9 @@ public class MainActivity extends FragmentActivity {
     LinearLayout noDataLayout;
     
     private WeightEntryDialog weightEntryDialog;
-    private GraphController graphController;
+    
+    @Bean
+    GraphController graphController;
     
     
     @Override
@@ -104,27 +106,11 @@ public class MainActivity extends FragmentActivity {
         
     }
     
-    
-    @AfterViews
-    public void loadData() {
-        if (Settings.isLoadData() && 
-                daoHelper.getWeightCount() >= Settings.getGraphMinDataPoints()) {
-            toggleGraph(true);
-            graphController = new GraphController();
-            graphController.setupGraph(this);
-            graphController.updateGraph(daoHelper.getWeightByDateAsc(), this);
-            graphLayout.removeAllViews();
-            graphLayout.addView(graphController.getChart());
-        } else {
-            toggleGraph(false);
-        }
-    }
-
-    
     public void showWeightEntryDialog() {   
         Log.d(TAG, "show weight entry dialog...");
         weightEntryDialog.show(getSupportFragmentManager(), TAG);
         Log.d(TAG, "..control returned to main thread");
+        onDataUpdated();
     }
     
     /**
@@ -133,6 +119,23 @@ public class MainActivity extends FragmentActivity {
      */
     /* package */ WeightEntryDialog getWeightEntryDialog() {
         return weightEntryDialog;
+    }
+
+    @Override
+    @AfterViews
+    public void onDataUpdated() {
+        if (Settings.isRefreshUi()) {
+            if (Settings.isLoadData() && 
+                    daoHelper.getWeightCount() >= Settings.getGraphMinDataPoints()) {
+                toggleGraph(true);
+                graphController.setContext(this);
+                graphController.updateGraph(daoHelper.getWeightByDateAsc());
+                graphLayout.removeAllViews();
+                graphLayout.addView(graphController.getChart());
+            } else {
+                toggleGraph(false);
+            }
+        }
     }
 }
 

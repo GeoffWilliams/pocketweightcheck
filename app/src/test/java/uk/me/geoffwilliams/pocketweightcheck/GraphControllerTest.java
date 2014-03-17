@@ -18,17 +18,19 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 import java.util.Date;
+import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 /**
  *
  * @author geoff
  */
-public class GraphControllerTest extends TestSupport{
+public class GraphControllerTest extends TestSupport {
     GraphController graphController;
     MainActivity_ mainActivity;
     
@@ -44,20 +46,18 @@ public class GraphControllerTest extends TestSupport{
         mainActivity.daoHelper = new MockDaoHelper();
         Settings.setLoadData(true);
         graphController = new GraphController();
-        graphController.setupGraph(mainActivity);
+        graphController.setContext(mainActivity);
     }
     
     @Test
-    public void testAddNewReading() {
-        // test count goes up when we add data
+    public void testGraphController() {
+        DaoHelper daoHelper = new MockDaoHelper();
+        // a chartcontroller with no data will not give a graph yet
+        assertNull(graphController.getChart());
+        List<Weight> weights = daoHelper.getWeightByDateAsc();
         
-        int originalCount = graphController.getDataPointCount();
-        graphController.addNewReading(new Weight(new Date(), 99.9d));
-        assertEquals(originalCount+1, graphController.getDataPointCount());
-    }
-    
-    @Test
-    public void testSetupGraphController() {
+        // set some data, check we get a chart back
+        graphController.updateGraph(weights);
         assertNotNull(graphController.getChart());
     }
      

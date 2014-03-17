@@ -48,6 +48,8 @@ public class DAOTest extends TestSupport {
     private int sampleCount = 0;
 
     public DAOTest() {
+        // disable autoload for testing
+        Settings.setRefreshUi(false);
         activity = Robolectric.buildActivity(MainActivity.class).create().get();
         daoHelper = new DaoHelperImpl(activity);
         cs = daoHelper.getConnectionSource();

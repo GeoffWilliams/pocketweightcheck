@@ -38,6 +38,8 @@ public class TimePickerFragmentTest extends TestSupport {
  
     @Before
     public void setUp() {      
+        Settings.setRefreshUi(false);
+        
         fragmentActivity = Robolectric.buildActivity(MainActivity.class)
                 .create()
                 .start()

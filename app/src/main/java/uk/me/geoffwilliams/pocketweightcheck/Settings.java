@@ -35,6 +35,11 @@ public class Settings {
      * Automatically prompt for data entry (used for testing)
      */
     private static boolean promptForDataEntry = true;
+    
+    /**
+     * Automatically refresh the UI after new data (for testing)
+     */
+    private static boolean refreshUi = true;
 
     /**
      * Maximum weight to accept (KG)
@@ -108,6 +113,14 @@ public class Settings {
 
     public static int getGraphMinDataPoints() {
         return graphMinDataPoints;
+    }
+
+    public static boolean isRefreshUi() {
+        return refreshUi;
+    }
+
+    public static void setRefreshUi(boolean refreshUi) {
+        Settings.refreshUi = refreshUi;
     }
 
     

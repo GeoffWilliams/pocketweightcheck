@@ -31,25 +31,29 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 import android.text.format.DateFormat;
 import java.util.List;
+import org.androidannotations.annotations.EBean;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 /**
  *
  * @author geoff
  */
+@EBean(scope = EBean.Scope.Singleton)
 public class GraphController {
     
     private java.text.DateFormat df;
     private GraphicalView mChart;
-    private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
-    private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-    private TimeSeries recordedWeights;
-    private TimeSeries trendWeights;
+    private XYMultipleSeriesDataset mDataset;
+    private XYMultipleSeriesRenderer mRenderer;
+    private TimeSeries recordedWeights  = null;
+    private TimeSeries trendWeights = null;
    
-    private XYSeriesRenderer recordedWeightsRenderer = new XYSeriesRenderer();
-    private XYSeriesRenderer trendWeightsRenderer = new XYSeriesRenderer();
+    private XYSeriesRenderer recordedWeightsRenderer;
+    private XYSeriesRenderer trendWeightsRenderer;
     private String TAG = "pocketweightcheck.GraphController";
+    private Context context = null;
 
+    
     public int getDataPointCount() {
         int trendCount = (trendWeights == null) ? 0 : trendWeights.getItemCount();
         int recordedCount = (recordedWeights == null) ? 0 : recordedWeights.getItemCount();
@@ -64,12 +68,11 @@ public class GraphController {
      * http://www.fourmilab.ch/hackdiet/e4/pencilpaper.html#PencilTrend
      *
      */
-    public void updateGraph(List<Weight> weights, Context context) {
+    public void updateGraph(List<Weight> weights) {
 
+        // always reinitialise to prevent the graph being appended
+        init();
         
-
-        Double[] reading;
-
         // overall data statistics - used to ensure line graph isn't rendered
         // offscreen - eg if all measurements are the same
         double min = 999;
@@ -109,12 +112,16 @@ public class GraphController {
         trendWeights.add(weight.getSampleTime(), weight.getTrend());
     }
 
-    public void setupGraph(Context context) {
-        df = DateFormat.getDateFormat(context);
+    public void init() {
         
-        recordedWeights = new TimeSeries("Recorded weights");
+        mDataset = new XYMultipleSeriesDataset();
+        mRenderer = new XYMultipleSeriesRenderer();
+        recordedWeightsRenderer = new XYSeriesRenderer();
+        trendWeightsRenderer = new XYSeriesRenderer();
+        
+        recordedWeights  = new TimeSeries("Recorded weights");
         trendWeights = new TimeSeries("Trend weights");
-
+    
         mDataset.addSeries(recordedWeights);
         mDataset.addSeries(trendWeights);
 
@@ -141,6 +148,11 @@ public class GraphController {
         // example of how to use the time-series formatter - but you lose the smooth
         // rendering and the dateformatting doesn't do what I want...
         //mChart = ChartFactory.getTimeChartView(context, mDataset, mRenderer, "YYYY-mm-dd");//0.3f);
+    }
+    
+    public void setContext(Context context) {
+        this.context = context;
+        df = DateFormat.getDateFormat(context);
 
     }
 
@@ -148,12 +160,4 @@ public class GraphController {
         return mChart;
     }
 
-    /**
-     * Add a new reading - no need to rescan all data, just merge in the new
-     * observation and render it...
-     */
-    public void addNewReading(Weight weight) {
-        addData(weight);   
-        mChart.repaint();
-    }
 }

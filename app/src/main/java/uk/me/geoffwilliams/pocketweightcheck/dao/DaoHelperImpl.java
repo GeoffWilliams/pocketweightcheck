@@ -18,6 +18,7 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck.dao;
 
+import android.app.Activity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,8 +33,15 @@ import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.Callable;
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.FragmentById;
+import org.androidannotations.annotations.RootContext;
+import org.androidannotations.annotations.ViewById;
+import uk.me.geoffwilliams.pocketweightcheck.MainActivity;
 import uk.me.geoffwilliams.pocketweightcheck.Settings;
+import uk.me.geoffwilliams.pocketweightcheck.R;
 
 /**
  *
@@ -50,7 +58,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
 
     private RuntimeExceptionDao<Weight, Integer> weightDao = null;
     private RuntimeExceptionDao<RecordWeight, Integer> recordWeightDao = null;
-
+    
     public DaoHelperImpl(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         weightDao = getWeightDao();
@@ -125,6 +133,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
             }
         }
     }
+
     
     private void deleteOldData() {
         DeleteBuilder<Weight, Integer> deleteBuilder = weightDao.deleteBuilder();
@@ -157,7 +166,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
 
                         // save the max weight (if needed)
                         updateMax(weight);
-
+                        
                         // because its Void not void!!!
                         return null;
                     }
