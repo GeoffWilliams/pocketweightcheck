@@ -16,21 +16,88 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package uk.me.geoffwilliams.pocketweightcheck;
+
+import java.util.Date;
 
 /**
  *
  * @author geoff
  */
 public class Settings {
-    private static boolean loadData = true;
 
+    /**
+     * Automatically load data in activities (useful for testing)
+     */
+    private static boolean loadData = true;
+    
+    private static boolean promptForDataEntry = true;
+
+    /**
+     * Maximum weight to accept (KG)
+     */
+    public static int maxAllowedWeight = 140;
+    
+    /**
+     * Minimum weight to accept (KG)
+     */
+    public static int minAllowedWeight = 40;
+    
+    /*
+     * Maximum age to accept for entered data (days) 
+     */
+    public static int maxSampleAge = 30;
+    
+    /**
+     * maximum sample age expressed as a date
+     */
+    private static final Date oldestAllowable = new Date(
+            new Date().getTime() - ((long) 60 * 60 * 24 * 1000 * maxSampleAge));
+    
     public static boolean isLoadData() {
         return loadData;
     }
-    
+
     public static void setLoadData(boolean loadData) {
         Settings.loadData = loadData;
     }
+
+    public static int getMaxAllowedWeight() {
+        return maxAllowedWeight;
+    }
+
+    public static void setMaxAllowedWeight(int maxAllowedWeight) {
+        Settings.maxAllowedWeight = maxAllowedWeight;
+    }
+
+    public static int getMinAllowedWeight() {
+        return minAllowedWeight;
+    }
+
+    public static void setMinAllowedWeight(int minAllowedWeight) {
+        Settings.minAllowedWeight = minAllowedWeight;
+    }
+    
+    public static Date getOldestAllowable() {
+        return oldestAllowable;
+    }
+    
+    public static int getMaxSampleAge() {
+        return maxSampleAge;
+    }
+    
+    public static void setMaxSampleAge(int days) {
+        Settings.maxSampleAge = days;
+    }
+
+    public static boolean isPromptForDataEntry() {
+        return promptForDataEntry;
+    }
+
+    public static void setPromptForDataEntry(boolean promptForDataEntry) {
+        Settings.promptForDataEntry = promptForDataEntry;
+    }
+
+    
+
 }

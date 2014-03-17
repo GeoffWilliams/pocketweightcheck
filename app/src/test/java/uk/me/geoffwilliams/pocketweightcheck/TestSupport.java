@@ -19,16 +19,21 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.MenuItem;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.tester.android.view.TestMenuItem;
 
 /**
  *
@@ -37,7 +42,7 @@ import org.robolectric.shadows.ShadowLog;
 @RunWith(RobolectricTestRunner.class)
 public class TestSupport {
 
-    protected Activity activity;
+    //protected Activity activity;
     protected FragmentActivity fragmentActivity;
     protected FragmentManager fragmentManager;
     protected FragmentTransaction fragmentTransaction;
@@ -64,4 +69,23 @@ public class TestSupport {
         fragmentTransaction.add(fragment, "tag");
         fragmentTransaction.commit();
     }
+    
+    protected MenuItem createMenuItemInstance(final int id) {
+        return new TestMenuItem() {
+            public int getItemId() {
+                return id;
+            }
+        };
+    }
+         
+    protected ShadowIntent createShadowIntent(Activity activity, int id) {
+        
+        activity.onOptionsItemSelected(createMenuItemInstance(id));
+
+        ShadowActivity shadowActivity = Robolectric.shadowOf(activity);
+        Intent startedIntent = shadowActivity.getNextStartedActivity();
+        ShadowIntent shadowIntent = Robolectric.shadowOf(startedIntent);
+        return shadowIntent;
+    }
+
 }

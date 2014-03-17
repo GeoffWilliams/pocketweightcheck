@@ -62,7 +62,9 @@ public class MainActivity extends FragmentActivity {
         Log.d(TAG, "starting!");
         setContentView(R.layout.activity_main);
         weightEntryDialog = new WeightEntryDialog_();
-        enterDataIfNeeded();
+        if (Settings.isPromptForDataEntry()) {
+            showWeightEntryDialog();
+        }
     }
 
     @Override
@@ -78,7 +80,7 @@ public class MainActivity extends FragmentActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.enterWeightItem:
-                enterDataIfNeeded();
+                showWeightEntryDialog();
                 return true;
             case R.id.importExportItem:
                 // not supported yet
@@ -118,14 +120,22 @@ public class MainActivity extends FragmentActivity {
     }
 
     
-    public void enterDataIfNeeded() {
-        if (true) {
-            Log.d(TAG, "show weight entry dialog...");
-            
-            weightEntryDialog.show(getSupportFragmentManager(), TAG);
-            Log.d(TAG, "..control returned to main thread");
+    public void showWeightEntryDialog() {
+    
+        Log.d(TAG, "show weight entry dialog...");
 
-        }
+        weightEntryDialog.show(getSupportFragmentManager(), TAG);
+        Log.d(TAG, "..control returned to main thread");
+
+
+    }
+    
+    /**
+     * Accessor for unit testing
+     * @return 
+     */
+    /* package */ WeightEntryDialog getWeightEntryDialog() {
+        return weightEntryDialog;
     }
 }
 

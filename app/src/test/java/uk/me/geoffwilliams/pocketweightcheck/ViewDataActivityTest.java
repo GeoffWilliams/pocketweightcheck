@@ -77,7 +77,7 @@ public class ViewDataActivityTest extends TestSupport {
         // reload table
         viewDataActivity.loadData();
         
-        // check we get the right message
+        // check we get the no data message
         TableRow row = (TableRow) layout.getChildAt(0);
         assertNotNull(row);
         TextView message = (TextView) row.getChildAt(0);

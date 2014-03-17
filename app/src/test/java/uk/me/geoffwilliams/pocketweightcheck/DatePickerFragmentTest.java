@@ -18,7 +18,6 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -68,7 +67,7 @@ public class DatePickerFragmentTest extends TestSupport {
 
         // work out a date that is too old
         Calendar cal = GregorianCalendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, - DateUtils.MAX_SAMPLE_DATE - 1);
+        cal.add(Calendar.DAY_OF_YEAR, - Settings.getMaxSampleAge() - 1);
 
         Log.d(TAG, "cal date " + cal.getTime().toString());
         

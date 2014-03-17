@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.androidannotations.annotations.EBean;
-import uk.me.geoffwilliams.pocketweightcheck.DateUtils;
+import uk.me.geoffwilliams.pocketweightcheck.Settings;
 
 /**
  *
@@ -130,7 +130,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         DeleteBuilder<Weight, Integer> deleteBuilder = weightDao.deleteBuilder();
         Where<Weight, Integer> where = deleteBuilder.where();
         try {
-            where.lt(Weight.COL_SAMPLE_TIME, new DateUtils().getOldestAllowable());
+            where.lt(Weight.COL_SAMPLE_TIME, Settings.getOldestAllowable());
             deleteBuilder.delete();
         } catch (SQLException e) {
             throw new RuntimeException("wrapped SQLException", e);
@@ -223,5 +223,10 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         } catch (SQLException e) {
             throw new RuntimeException("Wrapped exception", e);
         }
+    }
+
+    @Override
+    public long getWeightCount() {
+        return weightDao.countOf();
     }
 }

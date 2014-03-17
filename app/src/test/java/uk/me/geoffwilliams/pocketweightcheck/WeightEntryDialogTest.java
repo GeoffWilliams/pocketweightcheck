@@ -18,6 +18,7 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
+import android.app.Activity;
 import android.widget.Button;
 import android.widget.EditText;
 import static org.junit.Assert.*;
@@ -40,6 +41,7 @@ public class WeightEntryDialogTest extends TestSupport{
     private EditText weightEntryEditText;
     private Button cancelButton;
     private WeightEntryDialog_ fragment;
+    private Activity activity;
   
     // the isVisible() tests always return false whatever the state of the dialogue
     // so these tests/asserts are commented out for now.

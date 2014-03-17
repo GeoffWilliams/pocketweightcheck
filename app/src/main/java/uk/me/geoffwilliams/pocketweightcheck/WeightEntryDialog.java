@@ -45,9 +45,6 @@ public class WeightEntryDialog extends DialogFragment {
     
     private final static String TAG = "pocketweightcheck.WeightEntryDialog";
 
-    public final static int MAX_ALLOWED_WEIGHT = 140;
-    public final static int MIN_ALLOWED_WEIGHT = 40;
-
     private double enteredWeight = 0;
 
     @ViewById(R.id.dateTakenMessage)
@@ -88,14 +85,6 @@ public class WeightEntryDialog extends DialogFragment {
     @Bean(DaoHelperImpl.class)
     DaoHelper daoHelper;
     
-//
-//    private Provider<Context> contextProvider;
-//
-//    @Inject
-//    public WeightEntryDialog(Provider<Context> contextProvider) {
-//        this.contextProvider = contextProvider;
-//    }
-    
     private void save() {
         Log.d(TAG, "saving weight...");
         Weight weight = new Weight(dateUtils.getDate(), enteredWeight);
@@ -113,9 +102,9 @@ public class WeightEntryDialog extends DialogFragment {
         try {
             enteredWeight = Float.parseFloat(weightEntryEditText.getText().toString());
 
-            if (enteredWeight < MIN_ALLOWED_WEIGHT) {
+            if (enteredWeight < Settings.minAllowedWeight) {
                 message = msgTooLight;
-            } else if (enteredWeight > MAX_ALLOWED_WEIGHT) {
+            } else if (enteredWeight > Settings.maxAllowedWeight) {
                 message = msgTooHeavy;
             } else {
                 try {

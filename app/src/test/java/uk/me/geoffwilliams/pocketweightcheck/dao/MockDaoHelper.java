@@ -33,7 +33,7 @@ import java.util.List;
  * @author geoff
  */
 public class MockDaoHelper implements DaoHelper {
-    public final static int SAMPLE_SIZE = 30;
+    public final static int SAMPLE_SIZE = 4;
     public final static double SAMPLE_WEIGHT_INITIAL = 111.1d;
     private final static String TAG = "pocketweightcheck.MockDaoHelper";
     private List<Weight> sampleData = new ArrayList<Weight>();
@@ -118,6 +118,11 @@ public class MockDaoHelper implements DaoHelper {
     @Override
     public void deleteAllData() {
          sampleData = new ArrayList<Weight>();
+    }
+
+    @Override
+    public long getWeightCount() {
+        return sampleData.size();
     }
     
 }

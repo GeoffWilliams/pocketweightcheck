@@ -105,7 +105,7 @@ public class TimePickerFragmentTest extends TestSupport {
         // we must first set the DATE so that decreasing by
         // one minute in TIME will cause rejection
         Calendar cal = GregorianCalendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, - DateUtils.MAX_SAMPLE_DATE);
+        cal.add(Calendar.DAY_OF_YEAR, - Settings.getMaxSampleAge());
         Log.d(TAG, "Computed old DATE: " + cal.getTime().toString());
         
         // put the date inside the dateutils instance singleton and ensure its 

@@ -19,17 +19,25 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import java.util.Date;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowHandler;
+import org.robolectric.shadows.ShadowIntent;
+import org.robolectric.tester.android.view.TestMenuItem;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 public class MainActivityTest extends TestSupport {
 
@@ -40,7 +48,8 @@ public class MainActivityTest extends TestSupport {
     
     @Before
     public void setUp() throws Exception {
-        
+        // turn off automatic actions first...
+        Settings.setPromptForDataEntry(false);
         Settings.setLoadData(false);
         
         mainActivity = (MainActivity_) Robolectric.buildActivity(MainActivity_.class)
@@ -65,8 +74,15 @@ public class MainActivityTest extends TestSupport {
     public void testNoDataNoGraph() {
         daoHelper.deleteAllData();
         mainActivity.loadData();
-        assertEquals(View.INVISIBLE, graphLayout.getVisibility());
-        assertEquals(View.VISIBLE, noDataLayout.getVisibility());
+        // should be no data until at least 2 points loaded
+        for (int i = 0 ; i < 3 ; i++) {
+            
+            // 3x runs - 0 entries, 1 entries, 2 entries
+            
+            assertEquals(View.INVISIBLE, graphLayout.getVisibility());
+            assertEquals(View.VISIBLE, noDataLayout.getVisibility());
+            daoHelper.create(new Weight(new Date(), 88.9d));
+        }
     }
     
     @Test
@@ -74,4 +90,37 @@ public class MainActivityTest extends TestSupport {
         assertEquals(View.VISIBLE, graphLayout.getVisibility());
         assertEquals(View.INVISIBLE, noDataLayout.getVisibility());
     }
+    
+    
+    
+    //
+    // menu tests
+    //
+    @Test
+    public void testEnterWeightMenuItem() {
+
+        
+        WeightEntryDialog dialog = mainActivity.getWeightEntryDialog();
+        assertFalse(dialog.isVisible());            
+        
+        // manually invoke the callback...
+        mainActivity.onOptionsItemSelected(createMenuItemInstance(R.id.enterWeightItem));
+        
+        
+        // check the dialog is displaying
+        ShadowHandler.idleMainLooper();
+        assertTrue(dialog.isVisible());
+           
+    }
+    
+    @Test
+    public void testViewDataMenuItem() {
+        ShadowIntent intent = createShadowIntent(mainActivity, R.id.viewItem);
+        
+        assertEquals(
+                intent.getComponent().getClassName(), 
+                ViewDataActivity_.class.getName());       
+        
+    }
+    
 }

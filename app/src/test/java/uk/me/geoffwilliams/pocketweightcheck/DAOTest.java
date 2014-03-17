@@ -18,6 +18,7 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
+import android.app.Activity;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
@@ -28,7 +29,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 import org.robolectric.Robolectric;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
@@ -44,6 +44,8 @@ public class DAOTest extends TestSupport {
     private DaoHelperImpl daoHelper;
     private static final double MAX_SAMPLE_WEIGHT = 111.1d;
     private static final double MIN_SAMPLE_WEIGHT = 66.6d;
+    private Activity activity;
+    private int sampleCount = 0;
 
     public DAOTest() {
         activity = Robolectric.buildActivity(MainActivity.class).create().get();
@@ -64,12 +66,17 @@ public class DAOTest extends TestSupport {
         // insert a bunch of samples
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(new Date());
-        for (int i = 0; i < DateUtils.MAX_SAMPLE_DATE + 10; i++) {
+        
+        // reduce the amount of samples to make the tests run quicker
+        Settings.setMaxSampleAge(3);
+        
+        for (int i = 0; i < Settings.getMaxSampleAge() + 1; i++) {
             cal.add(Calendar.DAY_OF_YEAR, -1);
             Double value = MAX_SAMPLE_WEIGHT - i;
             value = Math.max(MIN_SAMPLE_WEIGHT, value);
             Weight weight = new Weight(cal.getTime(), value);
             daoHelper.create(weight);
+            sampleCount++;
         }
     }
 
@@ -164,7 +171,7 @@ public class DAOTest extends TestSupport {
         // check that the earliest record is not before the oldest allowable
         // date
         Date oldestEntry = weights.get(0).getSampleTime();
-        Date oldestAllowable = new DateUtils().getOldestAllowable();
+        Date oldestAllowable = Settings.getOldestAllowable();
         assertTrue(
                 oldestEntry.equals(oldestAllowable)
                 || oldestEntry.after(oldestAllowable));
@@ -177,7 +184,7 @@ public class DAOTest extends TestSupport {
         
         // mix in our maximum weight as the earliest allowed...
         Weight maximum = new Weight(
-                new DateUtils().getOldestAllowable(), 
+                Settings.getOldestAllowable(), 
                 Double.valueOf(MAX_SAMPLE_WEIGHT + 10)
         );
         daoHelper.create(maximum);
@@ -196,7 +203,7 @@ public class DAOTest extends TestSupport {
         
         // mix in our minimum weight as the earliest allowed...
         Weight minimum = new Weight(
-                new DateUtils().getOldestAllowable(), 
+                Settings.getOldestAllowable(), 
                 Double.valueOf(MIN_SAMPLE_WEIGHT - 10)
         );
         daoHelper.create(minimum);
@@ -205,5 +212,23 @@ public class DAOTest extends TestSupport {
         RecordWeight recordWeight = daoHelper.getMinWeight();
         assertEquals(recordWeight.getSampleTime(), minimum.getSampleTime());
         assertEquals(recordWeight.getValue(), minimum.getWeight());
+    }
+    
+    @Test
+    public void testWeightCountEmpty() {
+        daoHelper.deleteAllData();
+        assertEquals(0, daoHelper.getWeightCount());
+    }
+    
+    @Test
+    public void testWeightCountInitial() {
+        assertEquals(sampleCount, daoHelper.getWeightCount());
+    }
+    
+    @Test
+    public void testWeightCountIncrease() {
+        assertEquals(sampleCount, daoHelper.getWeightCount());
+        daoHelper.create(new Weight(new Date(), 88.8d));
+        assertEquals(sampleCount + 1, daoHelper.getWeightCount());
     }
 }

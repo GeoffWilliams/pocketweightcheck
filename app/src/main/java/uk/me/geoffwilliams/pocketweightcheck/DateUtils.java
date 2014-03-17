@@ -35,9 +35,6 @@ import org.androidannotations.annotations.res.StringRes;
 public class DateUtils {
     private static final String TAG = "pocketweightcheck.DateUtils";
 
-    public final static int MAX_SAMPLE_DATE = 30;
-    private final Date oldestAllowable = new Date(
-            new Date().getTime() - ((long) 60 * 60 * 24 * 1000 * MAX_SAMPLE_DATE));
     private Date date = new Date();
 
     @StringRes(R.string.msg_too_old)
@@ -56,7 +53,7 @@ public class DateUtils {
     public boolean setDate(Date date) {
         boolean status;
         String message = null;
-        if (date.before(oldestAllowable)) {
+        if (date.before(Settings.getOldestAllowable())) {
             // too old
             status = false;
             message = msgTooOld;
@@ -82,7 +79,4 @@ public class DateUtils {
 
     }
 
-    public Date getOldestAllowable() {
-        return oldestAllowable;
-    }
 }
