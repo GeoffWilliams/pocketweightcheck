@@ -78,7 +78,7 @@ public class WeightEntryDialog extends DialogFragment {
     @Bean
     DateUtils dateUtils;
     
-    private RefreshGraph mainActivity;
+    private DataChangeListener mainActivity;
     
     /**
      * Suggest a class to implement the interface.  During testing this still
@@ -95,7 +95,7 @@ public class WeightEntryDialog extends DialogFragment {
         Log.d(TAG, "...weight saved!");
         
         // update the main GUI
-        mainActivity.onDataUpdated();
+        mainActivity.onDataChanged();
     }
     
     @Click void cancelButton() {
@@ -129,11 +129,6 @@ public class WeightEntryDialog extends DialogFragment {
         toast.show();
     }
 
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        updateEntryDateMessage();
-//    }
-
     @Click
     public void dateTakenMessage(View v) {
         Log.d(TAG, "showTimePickerDialog");
@@ -166,7 +161,7 @@ public class WeightEntryDialog extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mainActivity = (RefreshGraph) activity;
+            mainActivity = (DataChangeListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement RefreshGraph");

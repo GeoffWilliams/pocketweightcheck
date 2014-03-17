@@ -22,6 +22,7 @@ package uk.me.geoffwilliams.pocketweightcheck.dao;
 import android.database.sqlite.SQLiteDatabase;
 import com.j256.ormlite.support.ConnectionSource;
 import java.util.List;
+import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
 
 /**
  *
@@ -48,4 +49,6 @@ public interface DaoHelper {
     public void deleteAllData();
     
     public long getWeightCount();
+    
+    public void registerListener(DataChangeListener listener);
 }

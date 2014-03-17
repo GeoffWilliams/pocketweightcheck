@@ -26,7 +26,7 @@ package uk.me.geoffwilliams.pocketweightcheck;
  * for full documentation
  * @author geoff
  */
-public interface RefreshGraph {
-    public void onDataUpdated();
+public interface DataChangeListener {
+    public void onDataChanged();
     
 }

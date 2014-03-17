@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
@@ -36,7 +37,7 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends FragmentActivity implements RefreshGraph {
+public class MainActivity extends FragmentActivity implements DataChangeListener {
 
     private final static String TAG = "pocketweightcheck";
     
@@ -110,7 +111,7 @@ public class MainActivity extends FragmentActivity implements RefreshGraph {
         Log.d(TAG, "show weight entry dialog...");
         weightEntryDialog.show(getSupportFragmentManager(), TAG);
         Log.d(TAG, "..control returned to main thread");
-        onDataUpdated();
+        onDataChanged();
     }
     
     /**
@@ -120,10 +121,15 @@ public class MainActivity extends FragmentActivity implements RefreshGraph {
     /* package */ WeightEntryDialog getWeightEntryDialog() {
         return weightEntryDialog;
     }
+    
+    @AfterViews
+    /* package */ void afterInject() {
+        daoHelper.registerListener(this);
+        onDataChanged();
+    }
 
     @Override
-    @AfterViews
-    public void onDataUpdated() {
+    public void onDataChanged() {
         if (Settings.isRefreshUi()) {
             if (Settings.isLoadData() && 
                     daoHelper.getWeightCount() >= Settings.getGraphMinDataPoints()) {

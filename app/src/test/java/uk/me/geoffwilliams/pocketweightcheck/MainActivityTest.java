@@ -69,7 +69,7 @@ public class MainActivityTest extends TestSupport {
         noDataLayout = (LinearLayout) mainActivity.findViewById(R.id.noDataLayout);
         
         Settings.setLoadData(true);
-        mainActivity.onDataUpdated();
+        mainActivity.onDataChanged();
 
     }
     
@@ -79,7 +79,7 @@ public class MainActivityTest extends TestSupport {
         
         // should be no data until at least 2 points loaded
         for (int i = 0 ; i < Settings.getGraphMinDataPoints() ; i++) {
-            mainActivity.onDataUpdated();
+            mainActivity.onDataChanged();
             // 2x runs - 0 entries, 1 entries
             Log.d(TAG, "data size: " + daoHelper.getWeightCount());
             assertEquals(View.INVISIBLE, graphLayout.getVisibility());
@@ -89,7 +89,7 @@ public class MainActivityTest extends TestSupport {
         
         // the last call to daoHelper.create() should trigger displaying the
         // graph...
-        mainActivity.onDataUpdated();
+        mainActivity.onDataChanged();
         assertEquals(View.VISIBLE, graphLayout.getVisibility());
         assertEquals(View.INVISIBLE, noDataLayout.getVisibility());
 

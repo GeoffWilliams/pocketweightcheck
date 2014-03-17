@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.robolectric.Robolectric;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
@@ -46,6 +47,7 @@ public class DAOTest extends TestSupport {
     private static final double MIN_SAMPLE_WEIGHT = 66.6d;
     private Activity activity;
     private int sampleCount = 0;
+    private MockDataChangeListener mockDataChangeListener;
 
     public DAOTest() {
         // disable autoload for testing
@@ -55,6 +57,11 @@ public class DAOTest extends TestSupport {
         cs = daoHelper.getConnectionSource();
     }
 
+    @Before
+    public void setUp() {
+        mockDataChangeListener = new MockDataChangeListener();
+        daoHelper.registerListener(mockDataChangeListener);
+    }
     /**
      * Delete all test data between tests
      */
@@ -88,6 +95,8 @@ public class DAOTest extends TestSupport {
 
         // 1st should succeed
         daoHelper.create(sample);
+        assertTrue(mockDataChangeListener.isUpdated());
+        mockDataChangeListener.setUpdated(false);
 
         // duplicate should fail
         try {
@@ -95,6 +104,7 @@ public class DAOTest extends TestSupport {
             fail("duplicate record was inserted!");
         } catch (RuntimeException e) {
             // pass :)
+            assertFalse(mockDataChangeListener.isUpdated());
         }
     }
 
@@ -104,6 +114,7 @@ public class DAOTest extends TestSupport {
 
         // 1st should succeed
         daoHelper.create(sample);
+        assertTrue(mockDataChangeListener.isUpdated());
     }
 
     @Test
@@ -116,6 +127,7 @@ public class DAOTest extends TestSupport {
         // delete record
         assertEquals("1 record should have been deleted", 1,
                 daoHelper.delete(sample));
+        assertTrue(mockDataChangeListener.isUpdated());
     }
     
     @Test
@@ -130,6 +142,7 @@ public class DAOTest extends TestSupport {
         // check all tables empty
         assertEquals("all weights must be deleted",
                 0, daoHelper.getWeightByDateAsc().size());
+        assertTrue(mockDataChangeListener.isUpdated());
     }
 
     @Test
@@ -177,6 +190,7 @@ public class DAOTest extends TestSupport {
         assertTrue(
                 oldestEntry.equals(oldestAllowable)
                 || oldestEntry.after(oldestAllowable));
+        assertTrue(mockDataChangeListener.isUpdated());
     }
 
     @Test
@@ -190,6 +204,7 @@ public class DAOTest extends TestSupport {
                 Double.valueOf(MAX_SAMPLE_WEIGHT + 10)
         );
         daoHelper.create(maximum);
+        assertTrue(mockDataChangeListener.isUpdated());
 
         // check the max was saved
         RecordWeight recordWeight = daoHelper.getMaxWeight();
@@ -209,6 +224,7 @@ public class DAOTest extends TestSupport {
                 Double.valueOf(MIN_SAMPLE_WEIGHT - 10)
         );
         daoHelper.create(minimum);
+        assertTrue(mockDataChangeListener.isUpdated());
         
         // check the min was saved
         RecordWeight recordWeight = daoHelper.getMinWeight();
@@ -219,6 +235,7 @@ public class DAOTest extends TestSupport {
     @Test
     public void testWeightCountEmpty() {
         daoHelper.deleteAllData();
+        assertTrue(mockDataChangeListener.isUpdated());
         assertEquals(0, daoHelper.getWeightCount());
     }
     
@@ -229,8 +246,10 @@ public class DAOTest extends TestSupport {
     
     @Test
     public void testWeightCountIncrease() {
+        assertFalse(mockDataChangeListener.isUpdated());
         assertEquals(sampleCount, daoHelper.getWeightCount());
         daoHelper.create(new Weight(new Date(), 88.8d));
+        assertTrue(mockDataChangeListener.isUpdated());
         assertEquals(sampleCount + 1, daoHelper.getWeightCount());
     }
 }

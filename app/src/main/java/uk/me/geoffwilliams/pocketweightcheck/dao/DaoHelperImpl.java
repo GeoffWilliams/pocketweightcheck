@@ -31,6 +31,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.androidannotations.annotations.AfterInject;
@@ -42,6 +43,7 @@ import org.androidannotations.annotations.ViewById;
 import uk.me.geoffwilliams.pocketweightcheck.MainActivity;
 import uk.me.geoffwilliams.pocketweightcheck.Settings;
 import uk.me.geoffwilliams.pocketweightcheck.R;
+import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
 
 /**
  *
@@ -55,7 +57,8 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     // any time you make changes to your database objects, you may have to increase the database version
     private static final int DATABASE_VERSION = 1;
     private static final String TAG = "pocketweightcheck.DaoHelper";
-
+    private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
+ 
     private RuntimeExceptionDao<Weight, Integer> weightDao = null;
     private RuntimeExceptionDao<RecordWeight, Integer> recordWeightDao = null;
     
@@ -141,6 +144,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         try {
             where.lt(Weight.COL_SAMPLE_TIME, Settings.getOldestAllowable());
             deleteBuilder.delete();
+            dataChanged();
         } catch (SQLException e) {
             throw new RuntimeException("wrapped SQLException", e);
         }
@@ -171,6 +175,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
                         return null;
                     }
                 });
+            dataChanged();
         } catch (SQLException e) {
             throw new RuntimeException("wrapped SqlException", e);
         }
@@ -178,7 +183,9 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
 
     @Override
     public int delete(Weight weight) {
-        return weightDao.delete(weight);
+        int count = weightDao.delete(weight);
+        dataChanged();
+        return count;
     }
 
     @Override
@@ -228,6 +235,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         try {
             TableUtils.clearTable(connectionSource, Weight.class);
             TableUtils.clearTable(connectionSource, RecordWeight.class);
+            dataChanged();
     
         } catch (SQLException e) {
             throw new RuntimeException("Wrapped exception", e);
@@ -237,5 +245,16 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     @Override
     public long getWeightCount() {
         return weightDao.countOf();
+    }
+
+    @Override
+    public void registerListener(DataChangeListener listener) {
+        dataChangeListeners.add(listener);
+    }
+    
+    private void dataChanged() {
+        for (DataChangeListener dataChangeListener : dataChangeListeners) {
+            dataChangeListener.onDataChanged();
+        }
     }
 }

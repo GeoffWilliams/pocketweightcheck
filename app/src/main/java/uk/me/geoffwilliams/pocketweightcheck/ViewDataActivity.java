@@ -71,7 +71,7 @@ public class ViewDataActivity extends FragmentActivity {
 
     private java.text.DateFormat df;
     private static final String TAG = "pocketweightcheck.ViewDataActivity";
-    private RefreshGraph mainActivity;
+    private DataChangeListener mainActivity;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +158,7 @@ public class ViewDataActivity extends FragmentActivity {
 
                                     // update graph if not in unit test...
                                     if (mainActivity != null) {
-                                        mainActivity.onDataUpdated();
+                                        mainActivity.onDataChanged();
                                     }
                                 }
                             });
@@ -172,17 +172,6 @@ public class ViewDataActivity extends FragmentActivity {
                 }
             }
             Log.d(TAG, "...done loading data!");
-        }
-    }
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-        try {
-            mainActivity = (RefreshGraph) fragment;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(fragment.toString()
-                    + " must implement RefreshGraph");
         }
     }
 }

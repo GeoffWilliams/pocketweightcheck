@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
+import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
 
 /**
  *
@@ -37,6 +38,7 @@ public class MockDaoHelper implements DaoHelper {
     public final static double SAMPLE_WEIGHT_INITIAL = 111.1d;
     private final static String TAG = "pocketweightcheck.MockDaoHelper";
     private List<Weight> sampleData = new ArrayList<Weight>();
+    private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
     
     private void loadData() {
         Calendar cal = GregorianCalendar.getInstance();
@@ -123,6 +125,11 @@ public class MockDaoHelper implements DaoHelper {
     @Override
     public long getWeightCount() {
         return sampleData.size();
+    }
+
+    @Override
+    public void registerListener(DataChangeListener listener) {
+        dataChangeListeners.add(listener);
     }
     
 }
