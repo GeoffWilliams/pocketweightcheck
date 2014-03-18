@@ -77,7 +77,11 @@ public class RecordWeight {
         this.sampleTime = sampleTime;
     }
 
-    
+    @Override
+    public String toString() {
+        return String.format("RecordWeight:  {key: %s; value: %.2f sampleTime: %s",
+                key, value, sampleTime);
+    }
     
 }
 

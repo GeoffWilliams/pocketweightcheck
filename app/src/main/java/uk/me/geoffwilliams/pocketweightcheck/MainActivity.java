@@ -35,6 +35,8 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.androidannotations.annotations.sharedpreferences.SharedPref;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
@@ -45,9 +47,6 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
 
     private final static String TAG = "pocketweightcheck";
     
-//    @Inject 
-//    private Provider<FragmentManager> fragmentManagerProvider;
-//    
     @Bean(DaoHelperImpl.class)
     DaoHelper daoHelper;
 
@@ -83,16 +82,18 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     // must be wired after loading or causes error in emulator
     private java.text.DateFormat df = null;
     
+    @Pref
+    uk.me.geoffwilliams.pocketweightcheck.Prefs_ preferences;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "starting!");
-        setContentView(R.layout.activity_main);
-        weightEntryDialog = new WeightEntryDialog_();
         df = DateFormat.getDateFormat(this);
-        if (Settings.isPromptForDataEntry()) {
-            showWeightEntryDialog();
-        }
+        weightEntryDialog = new WeightEntryDialog_();
+        
+        Log.d(TAG, "dateformatter was set");
+
         
     }
 
@@ -103,7 +104,7 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         return true;
     }
 
-     @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
          Intent intent;
         // Handle item selection
@@ -120,7 +121,11 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
                 return true;
             case R.id.settingsItem:
 
-   
+                  // Display the fragment as the main content.
+                 getFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new PreferencesFragment())
+                        .commit();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -148,12 +153,20 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     }
     
     @AfterViews
-    /* package */ void afterInject() {
+    /* package */ void afterViews() {
         daoHelper.registerListener(this);
         onDataChanged();
+        if (Settings.isPromptForDataEntry()) {
+            showWeightEntryDialog();
+        }
     }
     
     private String getExtremaString(String intro, RecordWeight recordWeight) {
+        assert intro != null : "intro cannot be null";
+        assert recordWeight != null : "recordWeight cannot be null";
+        assert on != null : "on cannot be null";
+        assert df != null : "df cannot be null";
+        Log.d(TAG, recordWeight.toString());
         return String.format(
                 "%s  %.2f %s %s", 
                 intro, 
@@ -166,15 +179,21 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         RecordWeight minWeight = daoHelper.getMinWeight();
         RecordWeight maxWeight = daoHelper.getMaxWeight();
         
-        String minMessageString = getExtremaString(msgMinWeight, minWeight);
-        String maxMessageString = getExtremaString(msgMaxWeight, maxWeight);
-    
-        minWeightMessage.setText(minMessageString);
-        maxWeightMessage.setText(maxMessageString);
+        if (minWeight != null && maxWeight != null) {
+            String minMessageString = getExtremaString(msgMinWeight, minWeight);
+            String maxMessageString = getExtremaString(msgMaxWeight, maxWeight);
+            minWeightMessage.setText(minMessageString);
+            maxWeightMessage.setText(maxMessageString);
+        } else {
+            Log.e(TAG, "recordweights were null in non-empty database");  
+        }
+        
+
     }
     
     @Override
     public void onDataChanged() {
+        Log.d(TAG, "onDataChange fired");
         if (Settings.isRefreshUi()) {
             if (Settings.isLoadData() && 
                     daoHelper.getWeightCount() >= Settings.getGraphMinDataPoints()) {

@@ -35,6 +35,7 @@ import org.androidannotations.annotations.EFragment;
 
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
@@ -92,15 +93,12 @@ public class WeightEntryDialog extends DialogFragment {
      */
     @Bean(DaoHelperImpl.class)
     DaoHelper daoHelper;
-    
+        
     private void save() {
         Log.d(TAG, "saving weight...");
         Weight weight = new Weight(dateUtils.getDate(), enteredWeight);
         daoHelper.create(weight);
         Log.d(TAG, "...weight saved!");
-        
-//        // update the main GUI
-//        mainActivity.onDataChanged();
     }
     
     @Click void cancelButton() {
