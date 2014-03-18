@@ -67,6 +67,8 @@ public class MockDaoHelper implements DaoHelper {
         sampleData.add(weight);
         Log.i(TAG, "MOCK saved weight {" + weight.getSampleTime().toString() 
                 + "," + weight.getWeight() + "}");
+        dataChanged();
+        
     }
 
     @Override
@@ -76,6 +78,7 @@ public class MockDaoHelper implements DaoHelper {
                 + "," + weight.getWeight() + "}");
         if (sampleData.remove(weight)) {
             deleteCount = 1;
+            dataChanged();
         } else {
             deleteCount = 0;
         }
@@ -121,6 +124,7 @@ public class MockDaoHelper implements DaoHelper {
     @Override
     public void deleteAllData() {
          sampleData = new ArrayList<Weight>();
+         dataChanged();
     }
 
     @Override
@@ -130,7 +134,15 @@ public class MockDaoHelper implements DaoHelper {
 
     @Override
     public void registerListener(DataChangeListener listener) {
-        dataChangeListeners.add(listener);
+        if (! dataChangeListeners.contains(listener)) {
+            dataChangeListeners.add(listener);
+        }
+    }
+    
+    private void dataChanged() {
+        for (DataChangeListener dataChangeListener : dataChangeListeners) {
+            dataChangeListener.onDataChanged();
+        }
     }
     
 }

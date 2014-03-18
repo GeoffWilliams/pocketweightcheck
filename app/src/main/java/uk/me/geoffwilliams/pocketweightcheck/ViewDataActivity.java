@@ -39,6 +39,7 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 import android.view.View;
 import android.util.Log;
+import android.view.Gravity;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.res.StringRes;
 import uk.me.geoffwilliams.pocketweightcheck.Settings;
@@ -48,7 +49,7 @@ import uk.me.geoffwilliams.pocketweightcheck.Settings;
  * @author geoff
  */
 @EActivity(R.layout.activity_view_data)
-public class ViewDataActivity extends FragmentActivity {
+public class ViewDataActivity extends FragmentActivity implements DataChangeListener {
 
     @ViewById(R.id.weightTableLayout)
     TableLayout layout;
@@ -81,7 +82,7 @@ public class ViewDataActivity extends FragmentActivity {
         // locale formatted date
         df = DateFormat.getDateFormat(this);
     }
-
+    
     private TableRow addRow() {
         TableRow row = new TableRow(this);
         layout.addView(row);
@@ -105,7 +106,9 @@ public class ViewDataActivity extends FragmentActivity {
     }
 
     @AfterViews
-    /*package*/ void loadData() {
+    @Override
+    public void onDataChanged() {
+        daoHelper.registerListener(this);
         if (Settings.isLoadData()) {
             Log.d(TAG, "loading data...");
 
@@ -131,9 +134,9 @@ public class ViewDataActivity extends FragmentActivity {
                 for (final Weight weight : weights) {
                     final TableRow row = addRow();
 
-                    // fixme
- //                   row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
+                    row.setLayoutParams(new TableLayout.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+                    row.setGravity(Gravity.CENTER_VERTICAL);
+                    
                     dateTextView = new TextView(this);
                     weightTextView = new TextView(this);
                     String datePretty = df.format(weight.getSampleTime());
@@ -141,7 +144,7 @@ public class ViewDataActivity extends FragmentActivity {
                     dateTextView.setText(datePretty);
                     dateTextView.setPadding(2, 2, 2, 2);
 
-                    weightTextView.setText(String.valueOf(weight.getWeight()));
+                    weightTextView.setText(String.format("%.2f",weight.getWeight()));
                     weightTextView.setPadding(2, 2, 2, 2);
 
                     // delete row icon
@@ -171,4 +174,5 @@ public class ViewDataActivity extends FragmentActivity {
             Log.d(TAG, "...done loading data!");
         }
     }
+
 }

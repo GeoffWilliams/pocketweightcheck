@@ -153,16 +153,21 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         onDataChanged();
     }
     
+    private String getExtremaString(String intro, RecordWeight recordWeight) {
+        return String.format(
+                "%s  %.2f %s %s", 
+                intro, 
+                recordWeight.getValue(), 
+                on, 
+                df.format(recordWeight.getSampleTime()));
+    }
+    
     private void refreshExtrema() {
         RecordWeight minWeight = daoHelper.getMinWeight();
         RecordWeight maxWeight = daoHelper.getMaxWeight();
         
-        String minMessageString = 
-                msgMinWeight + "  " + minWeight.getValue() + " " + on + " " + 
-                df.format(minWeight.getSampleTime());
-        String maxMessageString = 
-                msgMaxWeight + "  " + maxWeight.getValue() + " " + on + " " + 
-                df.format(maxWeight.getSampleTime());
+        String minMessageString = getExtremaString(msgMinWeight, minWeight);
+        String maxMessageString = getExtremaString(msgMaxWeight, maxWeight);
     
         minWeightMessage.setText(minMessageString);
         maxWeightMessage.setText(maxMessageString);

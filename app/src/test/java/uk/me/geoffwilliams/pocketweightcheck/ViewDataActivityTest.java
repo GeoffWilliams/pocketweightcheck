@@ -31,7 +31,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.TextView;
+import java.util.Date;
 import org.robolectric.util.ActivityController;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 /**
  *
@@ -43,11 +46,13 @@ public class ViewDataActivityTest extends TestSupport {
     private TableLayout layout;
     private static final int DELETE_BUTTON_POSITION = 2;
     private ViewDataActivity_ viewDataActivity;
+    private DaoHelper daoHelper;
 
     @Before
     public void setUp() {
         Settings.setLoadData(false);
         Settings.setRefreshUi(false);
+        daoHelper = new MockDaoHelper();
         
         viewDataActivity = Robolectric.buildActivity(ViewDataActivity_.class)
                 .create()
@@ -60,7 +65,7 @@ public class ViewDataActivityTest extends TestSupport {
 
         Log.d(TAG, "*** injected daoHelper ***");
         // inject mock DAO before the activity starts trying to load data...
-        viewDataActivity.daoHelper = new MockDaoHelper();
+        viewDataActivity.daoHelper = this.daoHelper;
         
         // enable loading data now the mock is in place
         Settings.setLoadData(true);
@@ -68,7 +73,7 @@ public class ViewDataActivityTest extends TestSupport {
         layout = (TableLayout) viewDataActivity.findViewById(R.id.weightTableLayout);
         assertNotNull(layout);
 
-        viewDataActivity.loadData();
+        viewDataActivity.onDataChanged();
 
     }
 
@@ -78,7 +83,7 @@ public class ViewDataActivityTest extends TestSupport {
         viewDataActivity.daoHelper.deleteAllData();
         
         // reload table
-        viewDataActivity.loadData();
+        viewDataActivity.onDataChanged();
         
         // check we get the no data message
         TableRow row = (TableRow) layout.getChildAt(0);
@@ -116,5 +121,21 @@ public class ViewDataActivityTest extends TestSupport {
         // check record was deleted and display updated
         assertEquals("record must be deleted",
                 rowCount - 1, layout.getChildCount());
+    }
+    
+    @Test
+    public void testCreate() {
+        // ensure display updated when adding a record
+        int rowCount = layout.getChildCount();
+        assertEquals("initial sample data must be loaded",
+                MockDaoHelper.SAMPLE_SIZE + 1, rowCount);
+
+        // add a new record
+        daoHelper.create(new Weight(new Date(), 88d));
+
+        // check record was deleted and display updated
+        assertEquals("display must be updated",
+                rowCount + 1, layout.getChildCount());
+        
     }
 }

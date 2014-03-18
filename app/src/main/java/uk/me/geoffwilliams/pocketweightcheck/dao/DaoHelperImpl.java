@@ -265,7 +265,9 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
 
     @Override
     public void registerListener(DataChangeListener listener) {
-        dataChangeListeners.add(listener);
+        if (! dataChangeListeners.contains(listener)) {
+            dataChangeListeners.add(listener);
+        }
     }
     
     private void dataChanged() {
