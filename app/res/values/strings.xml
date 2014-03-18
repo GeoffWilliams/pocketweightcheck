@@ -10,7 +10,7 @@
     <string name="date">Date</string>
     <string name="weight">Weight</string>
     <string name="on">on</string>
-
+    <string name="weight_entry_dialog_title">Weight entry</string>
 
     <string name="msg_saved">saved</string>
     <string name="msg_too_light">implausible weight - too light!</string>

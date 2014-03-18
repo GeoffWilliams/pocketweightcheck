@@ -19,6 +19,8 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -73,6 +75,9 @@ public class WeightEntryDialog extends DialogFragment {
     
     @StringRes(R.string.msg_error)
     String msgError;
+    
+    @StringRes(R.string.weight_entry_dialog_title)
+    String title;
 
 
     @Bean
@@ -156,17 +161,11 @@ public class WeightEntryDialog extends DialogFragment {
                 DateFormat.getTimeFormat(getActivity())
                 .format(dateUtils.getDate()));
     }
-
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        try {
-//            mainActivity = (DataChangeListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement RefreshGraph");
-//        }
-//    }
-
     
+    @Override   
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.setTitle(title);
+        return dialog; 
+    }
 }
