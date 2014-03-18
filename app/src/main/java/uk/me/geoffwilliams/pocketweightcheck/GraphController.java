@@ -108,8 +108,9 @@ public class GraphController {
 
         mRenderer.addXTextLabel(weight.getSampleTime().getTime(), dateFormatted);
 
-
-        trendWeights.add(weight.getSampleTime(), weight.getTrend());
+        if (weight.getTrend() != null) {
+            trendWeights.add(weight.getSampleTime(), weight.getTrend());
+        }
     }
 
     public void init() {

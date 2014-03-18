@@ -217,7 +217,23 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         } catch (SQLException e) {
             throw new RuntimeException("wrapped SQLException", e);
         }
+        calculateTrend(weights);
         return weights;
+    }
+    
+    private void calculateTrend(List<Weight> weights) {
+        double previousTrend = -1;
+        for (Weight weight : weights) {
+            if (previousTrend < 0) {
+                weight.setTrend(weight.getWeight());
+            } else {
+                double trend = previousTrend + 
+                        (Settings.getSmoothingConstant() * 
+                        (weight.getWeight() - previousTrend));
+                weight.setTrend(trend);
+            }
+            previousTrend = weight.getTrend();
+        }
     }
     
     

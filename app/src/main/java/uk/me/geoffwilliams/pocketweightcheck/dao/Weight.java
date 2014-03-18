@@ -39,7 +39,7 @@ public class Weight {
     @DatabaseField(canBeNull = false, columnName = COL_WEIGHT)
     private Double weight;
 
-    private Double trend = -999d;
+    private Double trend = null;
     
     public Weight() {}
     

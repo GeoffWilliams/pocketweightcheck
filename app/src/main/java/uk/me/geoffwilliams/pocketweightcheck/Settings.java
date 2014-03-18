@@ -64,8 +64,10 @@ public class Settings {
     /**
      * maximum sample age expressed as a date
      */
-    private static final Date oldestAllowable = new Date(
+    private static Date oldestAllowable = new Date(
             new Date().getTime() - ((long) 60 * 60 * 24 * 1000 * maxSampleAge));
+    
+    private static double smoothingConstant = 0.1d;
     
     public static boolean isLoadData() {
         return loadData;
@@ -121,6 +123,14 @@ public class Settings {
 
     public static void setRefreshUi(boolean refreshUi) {
         Settings.refreshUi = refreshUi;
+    }
+
+    public static double getSmoothingConstant() {
+        return smoothingConstant;
+    }
+
+    public static void setSmoothingConstant(double smoothingConstant) {
+        Settings.smoothingConstant = smoothingConstant;
     }
 
     

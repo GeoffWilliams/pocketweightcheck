@@ -252,4 +252,21 @@ public class DAOTest extends TestSupport {
         assertTrue(mockDataChangeListener.isUpdated());
         assertEquals(sampleCount + 1, daoHelper.getWeightCount());
     }
+    
+    @Test
+    public void testTrendCalculated() {
+        // delete all data then enter the same weight a few times
+        // trend weight should then be equal to the entered weight
+        double testWeight = 88.8d;
+        daoHelper.deleteAllData();
+        daoHelper.create(new Weight(new Date(), testWeight));
+        daoHelper.create(new Weight(new Date(), testWeight));
+        daoHelper.create(new Weight(new Date(), testWeight));
+        List<Weight> weights = daoHelper.getWeightByDateAsc();
+        for (Weight weight : weights) {
+            assertEquals(testWeight, weight.getTrend().doubleValue(), 0);
+        }
+        
+        
+    }
 }
