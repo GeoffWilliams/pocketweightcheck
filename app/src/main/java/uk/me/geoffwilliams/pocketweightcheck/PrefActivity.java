@@ -17,16 +17,25 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
  *
  * @author geoff
  */
-@EFragment
-public class PreferencesFragment extends PreferenceFragment {
+@EActivity
+public class PrefActivity extends PreferenceActivity {
  
-//    @Pref
-//    Prefs_ preferences;    
+    @Pref
+    Prefs_ preferences;    
     
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+        getFragmentManager()
+                        .beginTransaction().replace(android.R.id.content, new PrefFragment()).commit();
 
+    }
+    
+    public class PrefFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(final Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preferences);
+        }
     }
 }

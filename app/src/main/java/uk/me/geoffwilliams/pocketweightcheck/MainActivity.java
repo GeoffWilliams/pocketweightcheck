@@ -120,12 +120,8 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
                 startActivity(intent);
                 return true;
             case R.id.settingsItem:
-
-                  // Display the fragment as the main content.
-                 getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, new PreferencesFragment())
-                        .commit();
-
+                intent = new Intent(this, PrefActivity_.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
