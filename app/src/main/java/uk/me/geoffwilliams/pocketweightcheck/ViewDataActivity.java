@@ -20,6 +20,7 @@ package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -93,11 +94,13 @@ public class ViewDataActivity extends FragmentActivity {
         // date
         TextView tv = new TextView(this);
         tv.setText(dateLabel);
+        tv.setTypeface(null, Typeface.BOLD);
         row.addView(tv);
 
         // weight
         tv = new TextView(this);
         tv.setText(weightLabel);
+        tv.setTypeface(null, Typeface.BOLD);
         row.addView(tv);
     }
 
