@@ -93,8 +93,8 @@ public class GraphController {
         // 10 % of effective range... - use to pad graph
         double range = (max - min) * 0.1;
 
-        //     mRenderer.setYAxisMin(min - range);
-        //     mRenderer.setYAxisMax(max + range);
+        mRenderer.setYAxisMin(min - range);
+        mRenderer.setYAxisMax(max + range);
 
 
         mChart.repaint();
@@ -145,6 +145,7 @@ public class GraphController {
         mRenderer.setXLabels(0);
         mRenderer.setXLabelsAngle(45);
         mRenderer.setXLabelsAlign(Paint.Align.LEFT);
+        mRenderer.setMargins(new int[] {10, 10, 85, 10});
         mChart = ChartFactory.getCubeLineChartView(context, mDataset, mRenderer, 0.1f);
         // example of how to use the time-series formatter - but you lose the smooth
         // rendering and the dateformatting doesn't do what I want...
