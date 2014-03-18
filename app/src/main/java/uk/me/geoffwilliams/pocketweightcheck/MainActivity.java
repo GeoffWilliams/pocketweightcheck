@@ -22,18 +22,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringRes;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
+import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
 
 
 @EActivity(R.layout.activity_main)
@@ -50,6 +54,9 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     @ViewById(R.id.graphLayout)
     LinearLayout graphLayout;
     
+    @ViewById(R.id.statsLayout)
+    LinearLayout statsLayout;
+    
     @ViewById(R.id.noDataLayout)
     LinearLayout noDataLayout;
     
@@ -58,6 +65,23 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     @Bean
     GraphController graphController;
     
+    @ViewById(R.id.minWeightMessage)
+    TextView minWeightMessage;
+    
+    @ViewById(R.id.maxWeightMessage)
+    TextView maxWeightMessage;
+    
+    @StringRes(R.string.on)
+    String on;
+    
+    @StringRes(R.string.msg_min_weight)
+    String msgMinWeight;
+    
+    @StringRes(R.string.msg_max_weight)
+    String msgMaxWeight;
+    
+    // must be wired after loading or causes error in emulator
+    private java.text.DateFormat df = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +89,11 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         Log.d(TAG, "starting!");
         setContentView(R.layout.activity_main);
         weightEntryDialog = new WeightEntryDialog_();
+        df = DateFormat.getDateFormat(this);
         if (Settings.isPromptForDataEntry()) {
             showWeightEntryDialog();
         }
+        
     }
 
     @Override
@@ -101,10 +127,9 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         }
     }
     
-    private void toggleGraph(boolean show) {
-        graphLayout.setVisibility( (show) ? View.VISIBLE: View.INVISIBLE);
-        noDataLayout.setVisibility((show) ? View.INVISIBLE: View.VISIBLE);
-        
+    private void toggleStats(boolean show) {
+        statsLayout.setVisibility( (show) ? View.VISIBLE: View.GONE);
+        noDataLayout.setVisibility((show) ? View.GONE: View.VISIBLE);        
     }
     
     public void showWeightEntryDialog() {   
@@ -127,19 +152,36 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         daoHelper.registerListener(this);
         onDataChanged();
     }
-
+    
+    private void refreshExtrema() {
+        RecordWeight minWeight = daoHelper.getMinWeight();
+        RecordWeight maxWeight = daoHelper.getMaxWeight();
+        
+        String minMessageString = 
+                msgMinWeight + "  " + minWeight.getValue() + " " + on + " " + 
+                df.format(minWeight.getSampleTime());
+        String maxMessageString = 
+                msgMaxWeight + "  " + maxWeight.getValue() + " " + on + " " + 
+                df.format(maxWeight.getSampleTime());
+    
+        minWeightMessage.setText(minMessageString);
+        maxWeightMessage.setText(maxMessageString);
+    }
+    
     @Override
     public void onDataChanged() {
         if (Settings.isRefreshUi()) {
             if (Settings.isLoadData() && 
                     daoHelper.getWeightCount() >= Settings.getGraphMinDataPoints()) {
-                toggleGraph(true);
+                toggleStats(true);
                 graphController.setContext(this);
                 graphController.updateGraph(daoHelper.getWeightByDateAsc());
                 graphLayout.removeAllViews();
                 graphLayout.addView(graphController.getChart());
+                
+                refreshExtrema();
             } else {
-                toggleGraph(false);
+                toggleStats(false);
             }
         }
     }

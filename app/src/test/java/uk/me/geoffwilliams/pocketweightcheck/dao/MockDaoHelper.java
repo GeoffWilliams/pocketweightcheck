@@ -25,6 +25,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
@@ -83,12 +84,12 @@ public class MockDaoHelper implements DaoHelper {
 
     @Override
     public RecordWeight getMaxWeight() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new RecordWeight(RecordWeight.KEY_MAX_WEIGHT, new Date(), 999d);
     }
 
     @Override
     public RecordWeight getMinWeight() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new RecordWeight(RecordWeight.KEY_MIN_WEIGHT, new Date(), 0d);
     }
 
     @Override

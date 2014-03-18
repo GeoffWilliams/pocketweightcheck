@@ -42,10 +42,14 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 public class MainActivityTest extends TestSupport {
     private static final String TAG = "pocketweightcheck.MainActivityTest";
-    LinearLayout graphLayout;
+    LinearLayout statsLayout;
     LinearLayout noDataLayout;
+    TextView minWeightMessage;
+    TextView maxWeightMessage;
     DaoHelper daoHelper = new MockDaoHelper();
     MainActivity_ mainActivity;
+    int VISIBLE = View.VISIBLE;
+    int INVISIBLE = View.GONE;
     
     @Before
     public void setUp() throws Exception {
@@ -65,8 +69,16 @@ public class MainActivityTest extends TestSupport {
         
         mainActivity.daoHelper = daoHelper;
         
-        graphLayout = (LinearLayout) mainActivity.findViewById(R.id.graphLayout);
+        // UI components...
+        statsLayout = (LinearLayout) mainActivity.findViewById(R.id.statsLayout);
         noDataLayout = (LinearLayout) mainActivity.findViewById(R.id.noDataLayout);
+        minWeightMessage = (TextView) mainActivity.findViewById(R.id.minWeightMessage);
+        maxWeightMessage = (TextView) mainActivity.findViewById(R.id.maxWeightMessage);          
+        
+        assertNotNull(statsLayout);
+        assertNotNull(noDataLayout);
+        assertNotNull(minWeightMessage);
+        assertNotNull(maxWeightMessage);
         
         Settings.setLoadData(true);
         mainActivity.onDataChanged();
@@ -82,26 +94,38 @@ public class MainActivityTest extends TestSupport {
             mainActivity.onDataChanged();
             // 2x runs - 0 entries, 1 entries
             Log.d(TAG, "data size: " + daoHelper.getWeightCount());
-            assertEquals(View.INVISIBLE, graphLayout.getVisibility());
-            assertEquals(View.VISIBLE, noDataLayout.getVisibility());
+            assertEquals(INVISIBLE, statsLayout.getVisibility());
+            assertEquals(VISIBLE, noDataLayout.getVisibility());
             daoHelper.create(new Weight(new Date(), 88.9d));
         }
         
         // the last call to daoHelper.create() should trigger displaying the
         // graph...
         mainActivity.onDataChanged();
-        assertEquals(View.VISIBLE, graphLayout.getVisibility());
-        assertEquals(View.INVISIBLE, noDataLayout.getVisibility());
+        assertEquals(VISIBLE, statsLayout.getVisibility());
+        assertEquals(INVISIBLE, noDataLayout.getVisibility());
 
     }
     
     @Test
     public void testDataGraph() {
-        assertEquals(View.VISIBLE, graphLayout.getVisibility());
-        assertEquals(View.INVISIBLE, noDataLayout.getVisibility());
+        assertEquals(VISIBLE, statsLayout.getVisibility());
+        assertEquals(INVISIBLE, noDataLayout.getVisibility());
     }
     
-    
+    @Test
+    public void testMinMaxWeightMessage() {        
+        double minWeight = daoHelper.getMinWeight().getValue();
+        double maxWeight = daoHelper.getMaxWeight().getValue();
+        
+        // check the number is contained in each message
+        assertNotNull(minWeightMessage.getText());
+        assertNotNull(maxWeightMessage.getText());
+        assertTrue(minWeightMessage.getText().toString()
+                .contains(String.valueOf(minWeight)));
+        assertTrue(maxWeightMessage.getText().toString()
+                .contains(String.valueOf(maxWeight)));
+    }
     
     //
     // menu tests

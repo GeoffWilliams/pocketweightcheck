@@ -71,7 +71,6 @@ public class ViewDataActivity extends FragmentActivity {
 
     private java.text.DateFormat df;
     private static final String TAG = "pocketweightcheck.ViewDataActivity";
-//    private DataChangeListener mainActivity;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,11 +154,6 @@ public class ViewDataActivity extends FragmentActivity {
                                 public void onClick(View v) {
                                     daoHelper.delete(targetWeight);
                                     layout.removeView(targetRow);
-
-//                                    // update graph if not in unit test...
-//                                    if (mainActivity != null) {
-//                                        mainActivity.onDataChanged();
-//                                    }
                                 }
                             });
 

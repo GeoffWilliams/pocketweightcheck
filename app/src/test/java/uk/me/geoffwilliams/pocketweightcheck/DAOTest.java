@@ -266,7 +266,25 @@ public class DAOTest extends TestSupport {
         for (Weight weight : weights) {
             assertEquals(testWeight, weight.getTrend().doubleValue(), 0);
         }
-        
-        
+    }
+    
+    @Test
+    public void testMinWeightRead() {
+        Weight minWeight = new Weight(new Date(), 0d);
+        daoHelper.create(minWeight);
+        RecordWeight recordWeight = daoHelper.getMinWeight();
+        assertNotNull(recordWeight);
+        assertEquals(minWeight.getWeight(), recordWeight.getValue(), 0);
+        assertEquals(minWeight.getSampleTime(), recordWeight.getSampleTime());
+    }
+    
+    @Test
+    public void testMaxWeightRead() {
+        Weight maxWeight = new Weight(new Date(), 999d);
+        daoHelper.create(maxWeight);
+        RecordWeight recordWeight = daoHelper.getMaxWeight();
+        assertNotNull(recordWeight);
+        assertEquals(maxWeight.getWeight(), recordWeight.getValue(), 0);
+        assertEquals(maxWeight.getSampleTime(), recordWeight.getSampleTime());
     }
 }
