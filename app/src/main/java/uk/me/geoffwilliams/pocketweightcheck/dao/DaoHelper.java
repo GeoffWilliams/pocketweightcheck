@@ -22,7 +22,10 @@ package uk.me.geoffwilliams.pocketweightcheck.dao;
 import android.database.sqlite.SQLiteDatabase;
 import com.j256.ormlite.support.ConnectionSource;
 import java.util.List;
+import uk.me.geoffwilliams.pocketweightcheck.Bmi;
 import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
+import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
+import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
 
 /**
  *
@@ -53,4 +56,17 @@ public interface DaoHelper {
     public void registerListener(DataChangeListener listener);
     
     public Weight getLatestWeight();
+    
+    public Double getBmi();
+    
+    /**
+     * Allow preference injection for testing
+     * @param prefs 
+     */
+    public void setPrefs(Prefs_ prefs);
+
+    /**
+     * Allow bmi injection for testing
+     */
+    public void setBmi(Bmi_ bmi);
 }

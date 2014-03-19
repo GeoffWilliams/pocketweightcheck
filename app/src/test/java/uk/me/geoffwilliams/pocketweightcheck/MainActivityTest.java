@@ -52,11 +52,13 @@ public class MainActivityTest extends TestSupport {
     TextView maxWeightValue;
     TextView maxWeightDate;
     TextView bmiValue;
+    TextView bmiCategory;
     TextView trendValue;
-    DaoHelper daoHelper = new MockDaoHelper();
+    MockDaoHelper daoHelper = new MockDaoHelper();
     MainActivity_ mainActivity;
     int VISIBLE = View.VISIBLE;
     int INVISIBLE = View.GONE;
+    private Bmi_ bmi;
     
     @Before
     public void setUp() throws Exception {
@@ -86,6 +88,7 @@ public class MainActivityTest extends TestSupport {
         maxWeightValue = (TextView) mainActivity.findViewById(R.id.maxWeightValue);
         maxWeightDate = (TextView) mainActivity.findViewById(R.id.maxWeightDate);          
         bmiValue = (TextView) mainActivity.findViewById(R.id.bmiValue);
+        bmiCategory = (TextView) mainActivity.findViewById(R.id.bmiCategory);
         trendValue = (TextView) mainActivity.findViewById(R.id.trendValue);          
         
         assertNotNull(statsLayout);
@@ -97,11 +100,15 @@ public class MainActivityTest extends TestSupport {
         assertNotNull(maxWeightValue);
         assertNotNull(maxWeightDate);
         assertNotNull(bmiValue);
+        assertNotNull(bmiCategory);
         assertNotNull(trendValue);
 
+        bmi = Bmi_.getInstance_(mainActivity);
+        
         Settings.setLoadData(true);
         mainActivity.onDataChanged();
 
+        daoHelper.setMockHeightUnset(false);
     }
     
     @Test
@@ -172,7 +179,26 @@ public class MainActivityTest extends TestSupport {
     
     @Test
     public void testBmiMessage() {
+        Double bmiDao = daoHelper.getBmi();
+        String bmiFormatted = TextFormatter.formatDouble(bmiDao);
         
+        // test value
+        assertNotNull(bmiValue.getText());
+        assertEquals(bmiFormatted, bmiValue.getText());
+        
+        // test category
+        assertNotNull(bmiCategory.getText());
+        String bmiCategoryControl = bmi.lookupBmiCategory(bmiDao);
+        assertEquals(bmiCategoryControl, bmiCategory.getText());
+    }
+    
+    @Test
+    public void testBmiErrorNoHeight() {
+        // fake set prefs height to 0 and recheck gui...
+        daoHelper.setMockHeightUnset(true);
+        mainActivity.onDataChanged();
+        assertNotNull(bmiValue.getText());
+        assertEquals(getResourceString(R.string.msgBmiNotAvailable), bmiValue.getText());
     }
     
     @Test

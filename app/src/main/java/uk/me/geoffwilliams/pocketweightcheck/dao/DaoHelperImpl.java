@@ -18,7 +18,6 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck.dao;
 
-import android.app.Activity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -34,16 +33,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.FragmentById;
-import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.ViewById;
-import uk.me.geoffwilliams.pocketweightcheck.MainActivity;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+import uk.me.geoffwilliams.pocketweightcheck.Bmi;
 import uk.me.geoffwilliams.pocketweightcheck.Settings;
-import uk.me.geoffwilliams.pocketweightcheck.R;
 import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
+import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
+import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
 
 /**
  *
@@ -61,6 +58,12 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
  
     private RuntimeExceptionDao<Weight, Integer> weightDao = null;
     private RuntimeExceptionDao<RecordWeight, Integer> recordWeightDao = null;
+    
+    @Pref
+    Prefs_ prefs;
+    
+    @Bean
+    Bmi bmi;
     
     public DaoHelperImpl(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -292,5 +295,30 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
             throw new RuntimeException("wrapped SQLException", e);
         }
         return latestWeight;
+    }
+
+    @Override
+    public Double getBmi() {
+        Double bmiValue;
+        
+        // if unset in prefs will be primative zero...
+        float height = prefs.height().get();
+        Weight latestWeight = getLatestWeight();
+        if (latestWeight == null || height == 0) {
+            bmiValue = null;
+        } else {
+            bmiValue = bmi.calculateBmi(latestWeight.getWeight(), height);
+        }
+        return bmiValue;
+    }
+
+    @Override
+    public void setPrefs(Prefs_ prefs) {
+        this.prefs = prefs;
+    }
+
+    @Override
+    public void setBmi(Bmi_ bmi) {
+        this.bmi = bmi;
     }
 }

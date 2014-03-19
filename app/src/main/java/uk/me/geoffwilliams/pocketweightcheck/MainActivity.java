@@ -86,6 +86,9 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     
     @ViewById
     TextView bmiValue;
+
+    @ViewById
+    TextView bmiCategory;
     
     @ViewById
     TextView trendValue;
@@ -95,9 +98,12 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     
     @StringRes
     String msgMaxWeight;
-
-//    @Pref
-//    uk.me.geoffwilliams.pocketweightcheck.Prefs_ preferences;
+    
+    @StringRes
+    String msgBmiNotAvailable;
+    
+    @Bean
+    Bmi bmi;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,7 +197,13 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
                 TextFormatter.formatDate(this, maxWeight.getSampleTime()));
 
         // bmi
-        bmiValue.setText("bmi - comming soon");
+        Double bmiCalculated = daoHelper.getBmi();
+        if (bmiCalculated == null) {
+            bmiValue.setText(msgBmiNotAvailable);
+        } else {
+            bmiValue.setText(TextFormatter.formatDouble(bmiCalculated.doubleValue()));
+            bmiCategory.setText(bmi.lookupBmiCategory(bmiCalculated.doubleValue()));
+        }
         
         // trend
         trendValue.setText("trend - comming soon");

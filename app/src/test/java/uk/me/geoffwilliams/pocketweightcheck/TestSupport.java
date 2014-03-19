@@ -52,6 +52,10 @@ public class TestSupport {
     protected String getResourceString(int id) {
         return Robolectric.application.getResources().getString(id);
     }
+
+    protected String[] getResourceStringArray(int id) {
+        return Robolectric.application.getResources().getStringArray(id);
+    }
     
     @Before
     public void setUpLogging() {

@@ -45,22 +45,35 @@ public class DAOTest extends TestSupport {
     private DaoHelperImpl daoHelper;
     private static final double MAX_SAMPLE_WEIGHT = 111.1d;
     private static final double MIN_SAMPLE_WEIGHT = 66.6d;
-    private Activity activity;
+    private Activity mainActivity;
     private int sampleCount = 0;
     private MockDataChangeListener mockDataChangeListener;
+    private float height = 1.85f;
+    private Bmi_ bmi;
 
+    
     public DAOTest() {
         // disable autoload for testing
         Settings.setRefreshUi(false);
-        activity = Robolectric.buildActivity(MainActivity.class).create().get();
-        daoHelper = new DaoHelperImpl(activity);
+        mainActivity = Robolectric.buildActivity(MainActivity_.class).create().get();
+        daoHelper = new DaoHelperImpl(mainActivity);
         cs = daoHelper.getConnectionSource();
+        bmi = Bmi_.getInstance_(mainActivity);
+        daoHelper.setBmi(bmi);
     }
 
     @Before
     public void setUp() {
         mockDataChangeListener = new MockDataChangeListener();
         daoHelper.registerListener(mockDataChangeListener);
+        
+        
+        // height needs to be consistent in DAO and test class
+        Prefs_ prefs = new Prefs_(mainActivity);
+        prefs.height().put(height);
+        daoHelper.setPrefs(prefs);
+
+        
     }
     /**
      * Delete all test data between tests
@@ -303,6 +316,27 @@ public class DAOTest extends TestSupport {
         assertTrue(weightsLast.getSampleTime()
                 .equals(latestWeight.getSampleTime()));
         
+        
+    }
+    
+    @Test
+    public void testBmi() {
+        
+        // test BMI before loading data
+        assertNull(daoHelper.getBmi());
+      
+        // check BMI calculation matches the correct weight...
+        insertSampleData();
+        Double daoBmi = daoHelper.getBmi();
+        assertNotNull(daoBmi);
+        
+        Weight latestWeight = daoHelper.getLatestWeight();
+        assertNotNull(latestWeight);
+        double latestBmi = bmi.calculateBmi(latestWeight.getWeight(), height);
+        assertTrue(latestBmi > 0);
+        
+        // check independent calculations match
+        assertEquals(latestBmi, daoBmi, 0);
         
     }
 }

@@ -29,7 +29,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
-
+import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
+import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
 /**
  *
  * @author geoff
@@ -42,6 +43,8 @@ public class MockDaoHelper implements DaoHelper {
     private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
     private Date latestWeightDate = new Date();
     private double latestWeightValue = 999d;
+    // flag to fake behaviour of height being unset
+    private boolean mockHeightUnset = false;
     
     private void loadData() {
         Calendar cal = GregorianCalendar.getInstance();
@@ -152,5 +155,32 @@ public class MockDaoHelper implements DaoHelper {
         Log.d(TAG, "getLatestWeight()");
         return new Weight(latestWeightDate, latestWeightValue);
     }
+
+    @Override
+    public Double getBmi() {
+        // just make one up...
+        Double bmiValue;
+        if (mockHeightUnset) {
+            bmiValue = null;
+        } else {
+            bmiValue = 32.15;
+        }
+        return bmiValue;
+    }
+
+    @Override
+    public void setPrefs(Prefs_ prefs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setBmi(Bmi_ bmi) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void setMockHeightUnset(boolean mockHeightUnset) {
+        this.mockHeightUnset = mockHeightUnset;
+    }
+    
     
 }

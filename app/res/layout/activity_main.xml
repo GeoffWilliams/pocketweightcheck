@@ -81,6 +81,9 @@
                 <TextView
                     android:id="@+id/bmiValue"
                     android:text="bmiValue"/>
+                <TextView
+                    android:id="@+id/bmiCategory"
+                    android:text="bmiCategory"/>             
             </TableRow>
 
             <!-- trend -->
