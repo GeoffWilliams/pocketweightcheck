@@ -40,7 +40,7 @@ public class DatePickerFragmentTest extends TestSupport {
     public void setUp() {   
         Settings.setLoadData(false);
         
-        fragmentActivity = Robolectric.buildActivity(MainActivity.class)
+        fragmentActivity = Robolectric.buildActivity(MainActivity_.class)
                 .create()
                 .start()
                 .resume()

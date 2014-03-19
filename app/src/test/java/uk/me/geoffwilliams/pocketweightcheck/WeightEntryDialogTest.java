@@ -46,7 +46,7 @@ public class WeightEntryDialogTest extends TestSupport{
     public void setUp() {      
         Settings.setRefreshUi(false);
         
-        fragmentActivity = Robolectric.buildActivity(MainActivity.class)
+        fragmentActivity = Robolectric.buildActivity(MainActivity_.class)
                 .create()
                 .start()
                 .resume()
