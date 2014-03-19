@@ -21,34 +21,24 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
-import android.preference.Preference;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-import org.androidannotations.annotations.TextChange;
-import org.androidannotations.annotations.res.StringRes;
 
 /**
  *
  * @author geoff
  */
 @EActivity
-public class PrefActivity extends PreferenceActivity {
+public class PrefActivityModern extends PreferenceActivity {
     private static final String TAG = "pocketweightcheck.PrefActivity";
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    @SuppressWarnings( "deprecation" )
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager()
-                        .beginTransaction().replace(android.R.id.content, new PrefFragment()).commit();
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new PrefFragment()).commit();
 
     }
     

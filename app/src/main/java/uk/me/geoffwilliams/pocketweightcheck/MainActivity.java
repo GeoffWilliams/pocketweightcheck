@@ -127,7 +127,7 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-         Intent intent;
+        Intent intent;
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.enterWeightItem:
@@ -141,7 +141,17 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
                 startActivity(intent);
                 return true;
             case R.id.settingsItem:
-                intent = new Intent(this, PrefActivity_.class);
+                // you can't do this test inside the activity - just compiling 
+                // in the new methods - eg fragmentmanager IN THE SAME CLASS
+                // is enough to trigger the class being rejected by dalvik
+                if (android.os.Build.VERSION.SDK_INT >= 11) {
+                    Log.d(TAG,"modern android showing PreferenceFragment");
+                    intent = new Intent(this, PrefActivityModern_.class);
+                } else {
+                    // old android - do in this activity
+                    Log.d(TAG,"old android showing within this activity");
+                    intent = new Intent(this, PrefActivityLegacy_.class);
+                }
                 startActivity(intent);
                 return true;
             default:
