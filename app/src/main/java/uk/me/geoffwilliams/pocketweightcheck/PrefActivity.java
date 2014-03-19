@@ -21,11 +21,20 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
+import android.preference.Preference;
+import android.util.Log;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import org.androidannotations.annotations.TextChange;
+import org.androidannotations.annotations.res.StringRes;
 
 /**
  *
@@ -33,10 +42,8 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
  */
 @EActivity
 public class PrefActivity extends PreferenceActivity {
- 
-//    @Pref
-//    Prefs_ preferences;    
-    
+    private static final String TAG = "pocketweightcheck.PrefActivity";
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -46,10 +53,12 @@ public class PrefActivity extends PreferenceActivity {
     }
     
     public class PrefFragment extends PreferenceFragment {
+
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
         }
-    }
+
+    }    
 }

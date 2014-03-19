@@ -17,20 +17,49 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import org.androidannotations.annotations.sharedpreferences.DefaultFloat;
-import org.androidannotations.annotations.sharedpreferences.SharedPref;
+import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 /**
- *
+ * Workaround for all preferences being stored as strings by android - convert 
+ * them at runtime
  * @author geoff
  */
-@SharedPref(value = SharedPref.Scope.APPLICATION_DEFAULT)
-public interface Prefs {
+@EBean
+public class PrefsWrapper {
     
-    String targetWeight();
+    private static final float UNDEFINED = 0;
     
-    String height();
+    @Pref
+    Prefs_ prefs;
+    
+    private float convertFloat(String value) {
+        float f;
+        try {
+            f = Float.parseFloat(value);
+        } catch (NumberFormatException e) {
+            f = UNDEFINED;
+        }
+        return f;
+    }
+    
+    public float getHeight() {
+        return convertFloat(prefs.height().get());
+    }
+
+    public float getTargetWeight() {
+        return convertFloat(prefs.targetWeight().get());
+    }
+
+    public Prefs_ getPrefs() {
+        return prefs;
+    }
+
+    public void setPrefs(Prefs_ prefs) {
+        this.prefs = prefs;
+    }
+    
+    
 }

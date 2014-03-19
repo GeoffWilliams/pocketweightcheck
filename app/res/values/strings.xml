@@ -25,6 +25,8 @@
     <string name="msgBmi">BMI</string>
     <string name="msgTrend">trend</string>
     <string name="msgBmiNotAvailable">BMI not available - did you enter your height?</string>
+    <string name="msgPrefsTargetWeight">Target weight in KG</string>
+    <string name="msgPrefsHeight">Your height in Metres</string>
     
     <string-array name="bmiCategory">
         <item>Very severely underweight</item>

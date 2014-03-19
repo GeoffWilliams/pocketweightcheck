@@ -2,10 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference
 	    android:title="Height"
-	    android:summary="..."
-            android:key="height" />
+            android:inputType="numberDecimal"
+	    android:summary="@string/msgPrefsHeight"
+            android:key="height"    />
     <EditTextPreference
 	    android:title="Target Weight"
-	    android:summary="..."
+            android:inputType="numberDecimal"
+	    android:summary="@string/msgPrefsTargetWeight"
             android:key="targetWeight" />
 </PreferenceScreen>

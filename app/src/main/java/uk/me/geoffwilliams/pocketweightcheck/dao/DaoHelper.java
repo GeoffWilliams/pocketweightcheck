@@ -26,6 +26,7 @@ import uk.me.geoffwilliams.pocketweightcheck.Bmi;
 import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
 import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
 import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
+import uk.me.geoffwilliams.pocketweightcheck.PrefsWrapper;
 
 /**
  *
@@ -63,7 +64,7 @@ public interface DaoHelper {
      * Allow preference injection for testing
      * @param prefs 
      */
-    public void setPrefs(Prefs_ prefs);
+    public void setPrefsWrapper(PrefsWrapper prefs);
 
     /**
      * Allow bmi injection for testing

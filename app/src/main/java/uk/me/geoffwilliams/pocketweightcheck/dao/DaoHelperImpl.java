@@ -41,6 +41,7 @@ import uk.me.geoffwilliams.pocketweightcheck.Settings;
 import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
 import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
 import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
+import uk.me.geoffwilliams.pocketweightcheck.PrefsWrapper;
 
 /**
  *
@@ -59,8 +60,8 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     private RuntimeExceptionDao<Weight, Integer> weightDao = null;
     private RuntimeExceptionDao<RecordWeight, Integer> recordWeightDao = null;
     
-    @Pref
-    Prefs_ prefs;
+    @Bean
+    PrefsWrapper prefs;
     
     @Bean
     Bmi bmi;
@@ -302,7 +303,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         Double bmiValue;
         
         // if unset in prefs will be primative zero...
-        float height = prefs.height().get();
+        float height = prefs.getHeight();
         Weight latestWeight = getLatestWeight();
         if (latestWeight == null || height == 0) {
             bmiValue = null;
@@ -313,7 +314,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     }
 
     @Override
-    public void setPrefs(Prefs_ prefs) {
+    public void setPrefsWrapper(PrefsWrapper prefs) {
         this.prefs = prefs;
     }
 

@@ -70,8 +70,10 @@ public class DAOTest extends TestSupport {
         
         // height needs to be consistent in DAO and test class
         Prefs_ prefs = new Prefs_(mainActivity);
-        prefs.height().put(height);
-        daoHelper.setPrefs(prefs);
+        prefs.height().put(Float.toString(height));
+        PrefsWrapper prefsWrapper = new PrefsWrapper();
+        prefsWrapper.setPrefs(prefs);
+        daoHelper.setPrefsWrapper(prefsWrapper);
 
         
     }
