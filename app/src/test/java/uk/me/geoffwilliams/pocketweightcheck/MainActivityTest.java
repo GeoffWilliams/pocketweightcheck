@@ -203,7 +203,13 @@ public class MainActivityTest extends TestSupport {
     
     @Test
     public void testTrendMessage() {
+        assertNotNull(trendValue.getText());
         
+        // the mock dao always returns TREND_CONVERGING so just check we get the 
+        // right message
+        assertEquals(
+                getResourceStringArray(R.array.trendCategory)[Trend.TREND_CONVERGING], 
+                trendValue.getText());
     }
     
     //

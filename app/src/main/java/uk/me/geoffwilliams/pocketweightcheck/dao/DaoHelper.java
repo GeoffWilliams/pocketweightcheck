@@ -60,6 +60,8 @@ public interface DaoHelper {
     
     public Double getBmi();
     
+    public int getTrend();
+    
     /**
      * Allow preference injection for testing
      * @param prefs 

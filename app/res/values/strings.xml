@@ -39,4 +39,10 @@
         <item>Obese Class III (Very severely obese)</item> 	
     </string-array>
 
+    <string-array name="trendCategory">
+        <item>Not available</item>
+        <item>Making progress!</item>
+        <item>Stable</item>
+        <item>Action needed!</item>
+    </string-array>
 </resources>

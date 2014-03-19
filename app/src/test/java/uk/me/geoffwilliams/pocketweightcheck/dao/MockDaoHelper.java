@@ -32,6 +32,7 @@ import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
 import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
 import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
 import uk.me.geoffwilliams.pocketweightcheck.PrefsWrapper;
+import uk.me.geoffwilliams.pocketweightcheck.Trend;
 /**
  *
  * @author geoff
@@ -182,6 +183,11 @@ public class MockDaoHelper implements DaoHelper {
     @Override
     public void setPrefsWrapper(PrefsWrapper prefs) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getTrend() {
+        return Trend.TREND_CONVERGING;
     }
     
     

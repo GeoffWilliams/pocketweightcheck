@@ -34,6 +34,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringArrayRes;
 import org.androidannotations.annotations.res.StringRes;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.androidannotations.annotations.sharedpreferences.SharedPref;
@@ -102,8 +103,13 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     @StringRes
     String msgBmiNotAvailable;
     
+    @StringArrayRes
+    String[] trendCategory;
+    
     @Bean
     Bmi bmi;
+    
+    private Trend trend = new Trend();
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +212,7 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         }
         
         // trend
-        trendValue.setText("trend - comming soon");
+        trendValue.setText(trendCategory[daoHelper.getTrend()]);
 
     }
     

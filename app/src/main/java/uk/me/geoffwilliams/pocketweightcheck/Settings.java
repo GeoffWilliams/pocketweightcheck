@@ -77,6 +77,16 @@ public class Settings {
      */
     private static String decimalFormat = "%.2f";
     
+    /**
+     * Tolerance to exceed before a trend is deemed to be converging/diverging
+     */
+    private static float stableTrendTolerance = 0.25f;
+    
+    /**
+     * How many SAMPLES to calculate trend over
+     */
+    private static int trendSamples = 5;
+    
     public static boolean isLoadData() {
         return loadData;
     }
@@ -149,6 +159,20 @@ public class Settings {
         Settings.decimalFormat = decimalFormat;
     }
 
-    
+    public static float getStableTrendTolerance() {
+        return stableTrendTolerance;
+    }
+
+    public static void setStableTrendTolerance(float stableTrendTolerance) {
+        Settings.stableTrendTolerance = stableTrendTolerance;
+    }
+
+    public static int getTrendSamples() {
+        return trendSamples;
+    }
+
+    public static void setTrendSamples(int trendSamples) {
+        Settings.trendSamples = trendSamples;
+    }   
 
 }

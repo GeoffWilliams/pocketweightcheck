@@ -19,6 +19,7 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
+import android.util.Log;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
@@ -49,7 +50,10 @@ public class DAOTest extends TestSupport {
     private int sampleCount = 0;
     private MockDataChangeListener mockDataChangeListener;
     private float height = 1.85f;
+    private float targetWeight = 80.1f;
     private Bmi_ bmi;
+    private Prefs_ prefs;
+    private static final String TAG = "pocketweightcheck.DAOTest";
 
     
     public DAOTest() {
@@ -69,8 +73,9 @@ public class DAOTest extends TestSupport {
         
         
         // height needs to be consistent in DAO and test class
-        Prefs_ prefs = new Prefs_(mainActivity);
+        prefs = new Prefs_(mainActivity);
         prefs.height().put(Float.toString(height));
+        prefs.targetWeight().put(Float.toString(targetWeight));
         PrefsWrapper prefsWrapper = new PrefsWrapper();
         prefsWrapper.setPrefs(prefs);
         daoHelper.setPrefsWrapper(prefsWrapper);
@@ -100,6 +105,7 @@ public class DAOTest extends TestSupport {
             value = Math.max(MIN_SAMPLE_WEIGHT, value);
             Weight weight = new Weight(cal.getTime(), value);
             daoHelper.create(weight);
+            Log.d(TAG,"Added sample data:" + weight);
             sampleCount++;
         }
     }
@@ -338,7 +344,31 @@ public class DAOTest extends TestSupport {
         assertTrue(latestBmi > 0);
         
         // check independent calculations match
-        assertEquals(latestBmi, daoBmi, 0);
+        assertEquals(latestBmi, daoBmi, 0);  
+    }
+
+    @Test
+    public void testBmiNoHeight() {        
+        // test BMI returns null when no height set...
+        insertSampleData();
+        prefs.height().put("0");
+        Double daoBmi = daoHelper.getBmi();
+        assertNull(daoBmi);
+    }
         
+    @Test
+    public void testTrend() {
+        // example data INCREASES so just check we get the right value - the trend
+        // values are tested elsewhere
+        insertSampleData();
+        assertEquals(Trend.TREND_DIVERGING, daoHelper.getTrend());
+    }
+    
+    @Test
+    public void testTrendNoTarget() {
+        // test trend returns Trend.TREND_ERROR when no target weight set
+        insertSampleData();
+        prefs.targetWeight().put("0");
+        assertEquals(Trend.TREND_ERROR, daoHelper.getTrend());
     }
 }

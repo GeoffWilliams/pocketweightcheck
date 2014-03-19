@@ -42,6 +42,7 @@ import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
 import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
 import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
 import uk.me.geoffwilliams.pocketweightcheck.PrefsWrapper;
+import uk.me.geoffwilliams.pocketweightcheck.Trend;
 
 /**
  *
@@ -59,6 +60,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
  
     private RuntimeExceptionDao<Weight, Integer> weightDao = null;
     private RuntimeExceptionDao<RecordWeight, Integer> recordWeightDao = null;
+    private Trend trend = new Trend();
     
     @Bean
     PrefsWrapper prefs;
@@ -321,5 +323,10 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     @Override
     public void setBmi(Bmi_ bmi) {
         this.bmi = bmi;
+    }
+
+    @Override
+    public int getTrend() {
+        return trend.calculateTrend(prefs.getTargetWeight(), getWeightByDateAsc());
     }
 }

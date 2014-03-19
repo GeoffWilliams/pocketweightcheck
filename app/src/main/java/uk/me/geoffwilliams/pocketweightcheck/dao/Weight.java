@@ -48,6 +48,12 @@ public class Weight {
         this.weight = weight;
     }
     
+    public Weight(Date date, Double weight, Double trend) {
+        this.sampleTime = date;
+        this.weight = weight;
+        this.trend = trend;
+    }
+    
     public Date getSampleTime() {
         return sampleTime;
     }
