@@ -57,7 +57,7 @@ public class WeightEntryDialogTest extends TestSupport{
         
         fragmentManager = fragmentActivity.getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.main_activity, fragment);
+        fragmentTransaction.add(R.id.mainActivity, fragment);
         fragmentTransaction.commit();
 
         assertNotNull(fragment);
@@ -91,7 +91,7 @@ public class WeightEntryDialogTest extends TestSupport{
         ShadowHandler.idleMainLooper();
 
         // ensure you get saved message and dialogue is closed 
-        assertEquals(getResourceString(R.string.msg_saved), 
+        assertEquals(getResourceString(R.string.msgSaved), 
                 ShadowToast.getTextOfLatestToast());
         assertFalse(fragment.isVisible());
     }
@@ -102,7 +102,7 @@ public class WeightEntryDialogTest extends TestSupport{
 
         // ensure error message and dialogue still open
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_too_light), 
+        assertEquals(getResourceString(R.string.msgTooLight), 
                 ShadowToast.getTextOfLatestToast());
         assertTrue(fragment.isVisible());
     }
@@ -113,7 +113,7 @@ public class WeightEntryDialogTest extends TestSupport{
         
         // ensure error message and dialogue still visible
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_too_heavy), 
+        assertEquals(getResourceString(R.string.msgTooHeavy), 
                 ShadowToast.getTextOfLatestToast());
         assertTrue(fragment.isVisible());
     }
@@ -124,7 +124,7 @@ public class WeightEntryDialogTest extends TestSupport{
         
         // ensure error message and dialogue still visible
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_invalid), 
+        assertEquals(getResourceString(R.string.msgInvalid), 
                 ShadowToast.getTextOfLatestToast());
         assertTrue(fragment.isVisible());
     }
@@ -135,7 +135,7 @@ public class WeightEntryDialogTest extends TestSupport{
         
         // ensure error message and dialogue still visible
         ShadowHandler.idleMainLooper();
-        assertEquals(getResourceString(R.string.msg_invalid), 
+        assertEquals(getResourceString(R.string.msgInvalid), 
                 ShadowToast.getTextOfLatestToast());
         assertTrue(fragment.isVisible());
     }

@@ -34,6 +34,8 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.tester.android.view.TestMenuItem;
+import android.text.format.DateFormat;
+import java.util.Date;
 
 /**
  *
@@ -46,7 +48,6 @@ public class TestSupport {
     protected FragmentActivity fragmentActivity;
     protected FragmentManager fragmentManager;
     protected FragmentTransaction fragmentTransaction;
-    
     
     protected String getResourceString(int id) {
         return Robolectric.application.getResources().getString(id);

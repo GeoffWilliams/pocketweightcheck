@@ -40,6 +40,8 @@ import org.androidannotations.annotations.sharedpreferences.SharedPref;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
+import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
+
 
 
 @EActivity(R.layout.activity_main)
@@ -64,37 +66,44 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
     @Bean
     GraphController graphController;
     
-    @ViewById(R.id.minWeightMessage)
-    TextView minWeightMessage;
+    @ViewById
+    TextView latestWeightValue;
+
+    @ViewById
+    TextView latestWeightDate;
     
-    @ViewById(R.id.maxWeightMessage)
-    TextView maxWeightMessage;
+    @ViewById
+    TextView minWeightValue;
+
+    @ViewById
+    TextView minWeightDate;
     
-    @StringRes(R.string.on)
-    String on;
+    @ViewById
+    TextView maxWeightValue;
+
+    @ViewById
+    TextView maxWeightDate;
     
-    @StringRes(R.string.msg_min_weight)
+    @ViewById
+    TextView bmiValue;
+    
+    @ViewById
+    TextView trendValue;
+    
+    @StringRes
     String msgMinWeight;
     
-    @StringRes(R.string.msg_max_weight)
+    @StringRes
     String msgMaxWeight;
-    
-    // must be wired after loading or causes error in emulator
-    private java.text.DateFormat df = null;
-    
-    @Pref
-    uk.me.geoffwilliams.pocketweightcheck.Prefs_ preferences;
+
+//    @Pref
+//    uk.me.geoffwilliams.pocketweightcheck.Prefs_ preferences;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "starting!");
-        df = DateFormat.getDateFormat(this);
-        weightEntryDialog = new WeightEntryDialog_();
-        
-        Log.d(TAG, "dateformatter was set");
-
-        
+        weightEntryDialog = new WeightEntryDialog_();        
     }
 
     @Override
@@ -157,33 +166,35 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
         }
     }
     
-    private String getExtremaString(String intro, RecordWeight recordWeight) {
-        assert intro != null : "intro cannot be null";
-        assert recordWeight != null : "recordWeight cannot be null";
-        assert on != null : "on cannot be null";
-        assert df != null : "df cannot be null";
-        Log.d(TAG, recordWeight.toString());
-        return String.format(
-                "%s  %.2f %s %s", 
-                intro, 
-                recordWeight.getValue(), 
-                on, 
-                df.format(recordWeight.getSampleTime()));
-    }
     
-    private void refreshExtrema() {
+    private void refreshStatsTable() {
+        // latest weight
+        Weight latestWeight = daoHelper.getLatestWeight();
+        Log.d(TAG, "latest weight: " + latestWeight.toString());
+        latestWeightValue.setText(
+                TextFormatter.formatDouble(latestWeight.getWeight()));
+        latestWeightDate.setText(
+                TextFormatter.formatDate(this, latestWeight.getSampleTime()));
+        
+        // min/max weight
         RecordWeight minWeight = daoHelper.getMinWeight();
         RecordWeight maxWeight = daoHelper.getMaxWeight();
         
-        if (minWeight != null && maxWeight != null) {
-            String minMessageString = getExtremaString(msgMinWeight, minWeight);
-            String maxMessageString = getExtremaString(msgMaxWeight, maxWeight);
-            minWeightMessage.setText(minMessageString);
-            maxWeightMessage.setText(maxMessageString);
-        } else {
-            Log.e(TAG, "recordweights were null in non-empty database");  
-        }
+        minWeightValue.setText(
+                TextFormatter.formatDouble(minWeight.getValue()));
+        maxWeightValue.setText(
+                TextFormatter.formatDouble(maxWeight.getValue()));
+
+        minWeightDate.setText(
+                TextFormatter.formatDate(this, minWeight.getSampleTime()));
+        maxWeightDate.setText(
+                TextFormatter.formatDate(this, maxWeight.getSampleTime()));
+
+        // bmi
+        bmiValue.setText("bmi - comming soon");
         
+        // trend
+        trendValue.setText("trend - comming soon");
 
     }
     
@@ -199,7 +210,7 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
                 graphLayout.removeAllViews();
                 graphLayout.addView(graphController.getChart());
                 
-                refreshExtrema();
+                refreshStatsTable();
             } else {
                 toggleStats(false);
             }

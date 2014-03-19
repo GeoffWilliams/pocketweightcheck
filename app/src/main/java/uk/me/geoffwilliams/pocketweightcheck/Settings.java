@@ -67,7 +67,15 @@ public class Settings {
     private static Date oldestAllowable = new Date(
             new Date().getTime() - ((long) 60 * 60 * 24 * 1000 * maxSampleAge));
     
+    /**
+     * constant used in calculation of trend data
+     */
     private static double smoothingConstant = 0.1d;
+    
+    /**
+     * Argument used for String.format to round floats
+     */
+    private static String decimalFormat = "%.2f";
     
     public static boolean isLoadData() {
         return loadData;
@@ -131,6 +139,14 @@ public class Settings {
 
     public static void setSmoothingConstant(double smoothingConstant) {
         Settings.smoothingConstant = smoothingConstant;
+    }
+
+    public static String getDecimalFormat() {
+        return decimalFormat;
+    }
+
+    public static void setDecimalFormat(String decimalFormat) {
+        Settings.decimalFormat = decimalFormat;
     }
 
     

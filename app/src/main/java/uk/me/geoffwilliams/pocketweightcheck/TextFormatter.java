@@ -17,40 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package uk.me.geoffwilliams.pocketweightcheck.dao;
 
-import android.database.sqlite.SQLiteDatabase;
-import com.j256.ormlite.support.ConnectionSource;
-import java.util.List;
-import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
+package uk.me.geoffwilliams.pocketweightcheck;
+
+import android.app.Activity;
+import android.text.format.DateFormat;
+import java.util.Date;
 
 /**
  *
  * @author geoff
  */
-public interface DaoHelper {
-
-    public void create(final Weight weight);
-
-    public int delete(Weight weight);
-
-    public RecordWeight getMaxWeight();
-
-    public RecordWeight getMinWeight();
-
-    public List<Weight> getWeightByDateAsc();
-
-    public List<Weight> getWeightByDateDesc();
-
-    public void onCreate(SQLiteDatabase sqld, ConnectionSource cs);
-
-    public void onUpgrade(SQLiteDatabase sqld, ConnectionSource cs, int i, int i1);
+public class TextFormatter {
+    public static String formatDouble(double d) {
+        return String.format(Settings.getDecimalFormat(), d);
+    }
     
-    public void deleteAllData();
+    public static String formatDate(Activity context, Date date) {
+        java.text.DateFormat df = DateFormat.getDateFormat(context);
+        return df.format(date);
+    }
     
-    public long getWeightCount();
-    
-    public void registerListener(DataChangeListener listener);
-    
-    public Weight getLatestWeight();
 }

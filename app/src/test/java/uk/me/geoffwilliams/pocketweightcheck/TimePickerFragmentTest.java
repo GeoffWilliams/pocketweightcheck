@@ -51,7 +51,7 @@ public class TimePickerFragmentTest extends TestSupport {
         
         fragmentManager = fragmentActivity.getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.main_activity, fragment);
+        fragmentTransaction.add(R.id.mainActivity, fragment);
         fragmentTransaction.commit();
 
         assertNotNull(fragment);
@@ -96,7 +96,7 @@ public class TimePickerFragmentTest extends TestSupport {
                 cal.get(Calendar.MINUTE));
 
         
-        assertEquals(getResourceString(R.string.msg_future), 
+        assertEquals(getResourceString(R.string.msgFuture), 
                 ShadowToast.getTextOfLatestToast());
         assertFalse(fragment.isVisible());
     }    
@@ -129,7 +129,7 @@ public class TimePickerFragmentTest extends TestSupport {
                 cal.get(Calendar.MINUTE));
 
         
-        assertEquals(getResourceString(R.string.msg_too_old), 
+        assertEquals(getResourceString(R.string.msgTooOld), 
                 ShadowToast.getTextOfLatestToast());
         assertFalse(fragment.isVisible());
     }    

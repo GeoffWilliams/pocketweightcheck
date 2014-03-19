@@ -11,7 +11,7 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/weight_entry_message" />
+        android:text="@string/weightEntryMessage" />
 
     <EditText
         android:id="@+id/weightEntryEditText"
@@ -26,7 +26,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/weight_entry_date_message" />
+        android:text="@string/weightEntryDateMessage" />
 
     <TextView
         android:id="@+id/textView2"

@@ -275,4 +275,22 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
             dataChangeListener.onDataChanged();
         }
     }
+
+    @Override
+    public Weight getLatestWeight() {
+        List<Weight> weights;
+        QueryBuilder<Weight, Integer> queryBuilder = weightDao.queryBuilder();
+        queryBuilder.orderBy(Weight.COL_SAMPLE_TIME, false);
+        queryBuilder.limit(1l);
+        Weight latestWeight = null;
+        try {
+            weights = queryBuilder.query();
+            if (weights.size() == 1) {
+                latestWeight = weights.get(0);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("wrapped SQLException", e);
+        }
+        return latestWeight;
+    }
 }

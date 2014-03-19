@@ -51,7 +51,7 @@ public class DatePickerFragmentTest extends TestSupport {
         
         fragmentManager = fragmentActivity.getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.main_activity, fragment);
+        fragmentTransaction.add(R.id.mainActivity, fragment);
         fragmentTransaction.commit();
 
         assertNotNull(fragment);
@@ -82,7 +82,7 @@ public class DatePickerFragmentTest extends TestSupport {
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH));
 
-        assertEquals(getResourceString(R.string.msg_too_old), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msgTooOld), ShadowToast.getTextOfLatestToast());
         assertFalse(fragment.isVisible());
     }
 
@@ -103,7 +103,7 @@ public class DatePickerFragmentTest extends TestSupport {
                 cal.get(Calendar.DAY_OF_MONTH));
 
         
-        assertEquals(getResourceString(R.string.msg_future), ShadowToast.getTextOfLatestToast());
+        assertEquals(getResourceString(R.string.msgFuture), ShadowToast.getTextOfLatestToast());
         assertFalse(fragment.isVisible());
     }
     

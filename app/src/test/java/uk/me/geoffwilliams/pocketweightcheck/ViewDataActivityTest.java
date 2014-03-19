@@ -90,7 +90,7 @@ public class ViewDataActivityTest extends TestSupport {
         assertNotNull(row);
         TextView message = (TextView) row.getChildAt(0);
         assertNotNull(message);
-        assertEquals(getResourceString(R.string.msg_no_data), message.getText());
+        assertEquals(getResourceString(R.string.msgNoData), message.getText());
     }
     
     /**

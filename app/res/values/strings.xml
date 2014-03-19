@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">pocketweightcheck</string>
-    <string name="action_settings">Settings</string>
+    <string name="appName">pocketweightcheck</string>
+    <string name="actionSettings">Settings</string>
 
     
-    <string name="weight_entry_message">Please enter weight in KG</string>
-    <string name="weight_entry_date_message">When was this sample taken?</string>
-    <string name="date">Date</string>
-    <string name="weight">Weight</string>
-    <string name="on">on</string>
-    <string name="weight_entry_dialog_title">Weight entry</string>
+    <string name="weightEntryMessage">Please enter weight in KG</string>
+    <string name="weightEntryDateMessage">When was this sample taken?</string>
+    <string name="dateLabel">Date</string>
+    <string name="weightLabel">Weight</string>
+    <string name="weightEntryDialogTitle">Weight entry</string>
 
-    <string name="msg_saved">saved</string>
-    <string name="msg_too_light">implausible weight - too light!</string>
-    <string name="msg_too_heavy">implausible weight - too heavy!</string>
-    <string name="msg_invalid">please enter a number</string>
-    <string name="msg_too_old">measurement is too old!</string>
-    <string name="msg_future">measurement cannot be in the future</string>
-    <string name="msg_error">Sorry, an error occurred</string>
-    <string name="msg_no_data">Not enough data yet...</string>
-    <string name="msg_max_weight">Maximum weight:</string>
-    <string name="msg_min_weight">Minimum weight:</string>
+    <string name="msgSaved">saved</string>
+    <string name="msgTooLight">implausible weight - too light!</string>
+    <string name="msgTooHeavy">implausible weight - too heavy!</string>
+    <string name="msgInvalid">please enter a number</string>
+    <string name="msgTooOld">measurement is too old!</string>
+    <string name="msgFuture">measurement cannot be in the future</string>
+    <string name="msgError">Sorry, an error occurred</string>
+    <string name="msgNoData">Not enough data yet...</string>
+    <string name="msgLatestWeight">Latest weight</string>
+    <string name="msgMaxWeight">Maximum weight</string>
+    <string name="msgMinWeight">Minimum weight</string>
+    <string name="msgBmi">BMI</string>
+    <string name="msgTrend">trend</string>
 </resources>

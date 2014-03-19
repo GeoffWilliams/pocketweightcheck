@@ -62,16 +62,15 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
     @Bean(DaoHelperImpl.class)
     DaoHelper daoHelper;
 
-    @StringRes(R.string.msg_no_data)
+    @StringRes
     String msgNoData;
 
-    @StringRes(R.string.date)
+    @StringRes
     String dateLabel;
 
-    @StringRes(R.string.weight)
+    @StringRes
     String weightLabel;
 
-    private java.text.DateFormat df;
     private static final String TAG = "pocketweightcheck.ViewDataActivity";
     
     @Override
@@ -79,8 +78,6 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
         super.onCreate(savedInstanceState); //To change body of generated methods, choose Tools | Templates.
 
         Log.d(TAG, "inside onCreate()");
-        // locale formatted date
-        df = DateFormat.getDateFormat(this);
     }
     
     private TableRow addRow() {
@@ -139,12 +136,13 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
                     
                     dateTextView = new TextView(this);
                     weightTextView = new TextView(this);
-                    String datePretty = df.format(weight.getSampleTime());
 
-                    dateTextView.setText(datePretty);
+                    dateTextView.setText(
+                            TextFormatter.formatDate(this, weight.getSampleTime()));
                     dateTextView.setPadding(2, 2, 2, 2);
 
-                    weightTextView.setText(String.format("%.2f",weight.getWeight()));
+                    weightTextView.setText(
+                            TextFormatter.formatDouble(weight.getWeight()));
                     weightTextView.setPadding(2, 2, 2, 2);
 
                     // delete row icon

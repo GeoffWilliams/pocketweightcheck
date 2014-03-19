@@ -37,10 +37,10 @@ public class DateUtils {
 
     private Date date = new Date();
 
-    @StringRes(R.string.msg_too_old)
+    @StringRes
     String msgTooOld;
 
-    @StringRes(R.string.msg_future)
+    @StringRes
     String msgFuture;
 
     @RootContext

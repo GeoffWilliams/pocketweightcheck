@@ -71,6 +71,11 @@ public class Weight {
     public void setTrend(Double trend) {
         this.trend = trend;
     }
-    
+ 
+    @Override
+    public String toString() {
+        return String.format("Weight: {sampleTime:%s;weight:%.2f;trend:%.2f}", 
+                sampleTime, weight, trend);
+    }
     
 }

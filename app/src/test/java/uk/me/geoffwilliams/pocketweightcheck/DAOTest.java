@@ -287,4 +287,22 @@ public class DAOTest extends TestSupport {
         assertEquals(maxWeight.getWeight(), recordWeight.getValue(), 0);
         assertEquals(maxWeight.getSampleTime(), recordWeight.getSampleTime());
     }
+    
+    @Test
+    public void testLatestWeight() {
+        // check that the weights returned from getLatestWeight() and the last
+        // entry in the list of weights in ascending order match
+        insertSampleData();
+        List<Weight> weights = daoHelper.getWeightByDateAsc();
+        assertFalse(weights.isEmpty());
+        Weight weightsLast = weights.get(weights.size() - 1);
+ 
+        Weight latestWeight = daoHelper.getLatestWeight();
+        
+        assertEquals(weightsLast.getWeight(), latestWeight.getWeight(), 0);
+        assertTrue(weightsLast.getSampleTime()
+                .equals(latestWeight.getSampleTime()));
+        
+        
+    }
 }

@@ -62,29 +62,27 @@ public class WeightEntryDialog extends DialogFragment {
 
 //    @ViewById(R.id.okButton)
 //    Button okButton;
-    @StringRes(R.string.msg_saved)
+    @StringRes
     String msgSaved;
 
-    @StringRes(R.string.msg_too_light)
+    @StringRes
     String msgTooLight;
 
-    @StringRes(R.string.msg_too_heavy)
+    @StringRes
     String msgTooHeavy;
 
-    @StringRes(R.string.msg_invalid)
+    @StringRes
     String msgInvalid;
     
-    @StringRes(R.string.msg_error)
+    @StringRes
     String msgError;
     
-    @StringRes(R.string.weight_entry_dialog_title)
-    String title;
+    @StringRes
+    String weightEntryDialogTitle;
 
 
     @Bean
     DateUtils dateUtils;
-    
-//    private DataChangeListener mainActivity;
     
     /**
      * Suggest a class to implement the interface.  During testing this still
@@ -163,7 +161,7 @@ public class WeightEntryDialog extends DialogFragment {
     @Override   
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.setTitle(title);
+        dialog.setTitle(weightEntryDialogTitle);
         return dialog; 
     }
 }

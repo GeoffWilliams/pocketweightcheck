@@ -38,14 +38,21 @@ import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.tester.android.view.TestMenuItem;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 public class MainActivityTest extends TestSupport {
     private static final String TAG = "pocketweightcheck.MainActivityTest";
     LinearLayout statsLayout;
     LinearLayout noDataLayout;
-    TextView minWeightMessage;
-    TextView maxWeightMessage;
+    TextView latestWeightValue;
+    TextView latestWeightDate;
+    TextView minWeightValue;
+    TextView minWeightDate;
+    TextView maxWeightValue;
+    TextView maxWeightDate;
+    TextView bmiValue;
+    TextView trendValue;
     DaoHelper daoHelper = new MockDaoHelper();
     MainActivity_ mainActivity;
     int VISIBLE = View.VISIBLE;
@@ -72,14 +79,26 @@ public class MainActivityTest extends TestSupport {
         // UI components...
         statsLayout = (LinearLayout) mainActivity.findViewById(R.id.statsLayout);
         noDataLayout = (LinearLayout) mainActivity.findViewById(R.id.noDataLayout);
-        minWeightMessage = (TextView) mainActivity.findViewById(R.id.minWeightMessage);
-        maxWeightMessage = (TextView) mainActivity.findViewById(R.id.maxWeightMessage);          
+        latestWeightValue = (TextView) mainActivity.findViewById(R.id.latestWeightValue);
+        latestWeightDate = (TextView) mainActivity.findViewById(R.id.latestWeightDate);          
+        minWeightValue = (TextView) mainActivity.findViewById(R.id.minWeightValue);
+        minWeightDate = (TextView) mainActivity.findViewById(R.id.minWeightDate);          
+        maxWeightValue = (TextView) mainActivity.findViewById(R.id.maxWeightValue);
+        maxWeightDate = (TextView) mainActivity.findViewById(R.id.maxWeightDate);          
+        bmiValue = (TextView) mainActivity.findViewById(R.id.bmiValue);
+        trendValue = (TextView) mainActivity.findViewById(R.id.trendValue);          
         
         assertNotNull(statsLayout);
         assertNotNull(noDataLayout);
-        assertNotNull(minWeightMessage);
-        assertNotNull(maxWeightMessage);
-        
+        assertNotNull(latestWeightValue);
+        assertNotNull(latestWeightDate);
+        assertNotNull(minWeightValue);
+        assertNotNull(minWeightDate);
+        assertNotNull(maxWeightValue);
+        assertNotNull(maxWeightDate);
+        assertNotNull(bmiValue);
+        assertNotNull(trendValue);
+
         Settings.setLoadData(true);
         mainActivity.onDataChanged();
 
@@ -115,16 +134,50 @@ public class MainActivityTest extends TestSupport {
     
     @Test
     public void testMinMaxWeightMessage() {        
-        double minWeight = daoHelper.getMinWeight().getValue();
-        double maxWeight = daoHelper.getMaxWeight().getValue();
+        RecordWeight minWeight = daoHelper.getMinWeight();
+        RecordWeight maxWeight = daoHelper.getMaxWeight();
         
-        // check the number is contained in each message
-        assertNotNull(minWeightMessage.getText());
-        assertNotNull(maxWeightMessage.getText());
-        assertTrue(minWeightMessage.getText().toString()
-                .contains(String.valueOf(minWeight)));
-        assertTrue(maxWeightMessage.getText().toString()
-                .contains(String.valueOf(maxWeight)));
+        // check correct data shown
+        String minWeightValueString = minWeightValue.getText().toString();
+        String minWeightDateString = minWeightDate.getText().toString();
+        String maxWeightValueString = maxWeightValue.getText().toString();
+        String maxWeightDateString = maxWeightDate.getText().toString();
+        assertNotNull(minWeightValueString);
+        assertNotNull(minWeightDateString);
+        assertNotNull(maxWeightValueString);
+        assertNotNull(maxWeightDateString);
+        
+        assertEquals(TextFormatter.formatDouble(minWeight.getValue()), 
+                minWeightValueString);
+        assertEquals(TextFormatter.formatDate(mainActivity, minWeight.getSampleTime()),
+                minWeightDateString);
+        assertEquals(TextFormatter.formatDouble(maxWeight.getValue()), 
+                maxWeightValueString);
+        assertEquals(TextFormatter.formatDate(mainActivity, maxWeight.getSampleTime()),
+                maxWeightDateString);
+    }
+    
+    @Test 
+    public void testLatestWeightMessage() {
+        Weight latestWeight = daoHelper.getLatestWeight();
+        String latestWeightValueString = latestWeightValue.getText().toString();
+        String latestWeightDateString = latestWeightDate.getText().toString();
+        assertNotNull(latestWeightValueString);
+        assertNotNull(latestWeightDateString);
+        assertEquals(TextFormatter.formatDouble(latestWeight.getWeight()), 
+                latestWeightValueString);
+        assertEquals(TextFormatter.formatDate(mainActivity, latestWeight.getSampleTime()), 
+                latestWeightDateString);
+    }
+    
+    @Test
+    public void testBmiMessage() {
+        
+    }
+    
+    @Test
+    public void testTrendMessage() {
+        
     }
     
     //

@@ -40,6 +40,8 @@ public class MockDaoHelper implements DaoHelper {
     private final static String TAG = "pocketweightcheck.MockDaoHelper";
     private List<Weight> sampleData = new ArrayList<Weight>();
     private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
+    private Date latestWeightDate = new Date();
+    private double latestWeightValue = 999d;
     
     private void loadData() {
         Calendar cal = GregorianCalendar.getInstance();
@@ -143,6 +145,12 @@ public class MockDaoHelper implements DaoHelper {
         for (DataChangeListener dataChangeListener : dataChangeListeners) {
             dataChangeListener.onDataChanged();
         }
+    }
+
+    @Override
+    public Weight getLatestWeight() {
+        Log.d(TAG, "getLatestWeight()");
+        return new Weight(latestWeightDate, latestWeightValue);
     }
     
 }
