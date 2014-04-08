@@ -32,6 +32,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import android.text.format.DateFormat;
 import java.util.List;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.res.StringRes;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 /**
@@ -53,7 +54,12 @@ public class GraphController {
     private String TAG = "pocketweightcheck.GraphController";
     private Context context = null;
 
+    @StringRes
+    String weightLabel;
     
+    @StringRes
+    String dateLabel;
+            
     public int getDataPointCount() {
         int trendCount = (trendWeights == null) ? 0 : trendWeights.getItemCount();
         int recordedCount = (recordedWeights == null) ? 0 : recordedWeights.getItemCount();
@@ -145,7 +151,9 @@ public class GraphController {
         mRenderer.setXLabels(0);
         mRenderer.setXLabelsAngle(45);
         mRenderer.setXLabelsAlign(Paint.Align.LEFT);
-        mRenderer.setMargins(new int[] {10, 10, 85, 10});
+        mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
+        mRenderer.setYLabelsPadding(8);
+        mRenderer.setMargins(new int[] {10, 40, 85, 10});
         mChart = ChartFactory.getCubeLineChartView(context, mDataset, mRenderer, 0.1f);
         // example of how to use the time-series formatter - but you lose the smooth
         // rendering and the dateformatting doesn't do what I want...

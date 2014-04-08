@@ -16,7 +16,9 @@
             android:layout_height="250dip"
             android:orientation="vertical"
             android:id="@+id/graphLayout"
-            android:padding="10dip"/>
+            android:gravity = "center_horizontal"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"/>
 
         <!-- table of stats -->        
         <TableLayout 
