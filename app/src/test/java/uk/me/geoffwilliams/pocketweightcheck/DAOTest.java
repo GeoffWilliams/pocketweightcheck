@@ -91,22 +91,30 @@ public class DAOTest extends TestSupport {
         TableUtils.clearTable(cs, RecordWeight.class);
     }
 
+    /**
+     * Sample data - increasing in weight
+     */
     private void insertSampleData() {
+        insertSampleData(1);
+    }
+    
+    private void insertSampleData(float increment) {
         // insert a bunch of samples
         Calendar cal = GregorianCalendar.getInstance();
-        cal.setTime(new Date());
+        Settings.setMaxSampleAge(3);
+        cal.setTime(Settings.getOldestAllowable());
         
         // reduce the amount of samples to make the tests run quicker
-        Settings.setMaxSampleAge(3);
         
-        for (int i = 0; i < Settings.getMaxSampleAge() + 1; i++) {
-            cal.add(Calendar.DAY_OF_YEAR, -1);
-            Double value = MAX_SAMPLE_WEIGHT - i;
+        
+        for (int i = 0; i <= Settings.getMaxSampleAge(); i++) {
+            Double value = MAX_SAMPLE_WEIGHT + ((i+1) * increment);
             value = Math.max(MIN_SAMPLE_WEIGHT, value);
             Weight weight = new Weight(cal.getTime(), value);
             daoHelper.create(weight);
             Log.d(TAG,"Added sample data:" + weight);
             sampleCount++;
+            cal.add(Calendar.DAY_OF_YEAR, + 1);
         }
     }
 
@@ -357,12 +365,23 @@ public class DAOTest extends TestSupport {
     }
         
     @Test
-    public void testTrend() {
-        // example data INCREASES so just check we get the right value - the trend
-        // values are tested elsewhere
-        insertSampleData();
+    public void testTrendDiverge() {
+        insertSampleData(1);
         assertEquals(Trend.TREND_DIVERGING, daoHelper.getTrend());
     }
+    
+    @Test
+    public void testTrendConverge() {
+        insertSampleData(-1);
+        assertEquals(Trend.TREND_CONVERGING, daoHelper.getTrend());
+    }
+    
+    @Test
+    public void testTrendStable() {
+        insertSampleData(0.01f);
+        assertEquals(Trend.TREND_STABLE, daoHelper.getTrend());
+    }
+    
     
     @Test
     public void testTrendNoTarget() {

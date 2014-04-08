@@ -18,7 +18,9 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -60,12 +62,6 @@ public class Settings {
      * Minimum amount of points to allow graph to display
      */
     private static int graphMinDataPoints = 2;
-    
-    /**
-     * maximum sample age expressed as a date
-     */
-    private static Date oldestAllowable = new Date(
-            new Date().getTime() - ((long) 60 * 60 * 24 * 1000 * maxSampleAge));
     
     /**
      * constant used in calculation of trend data
@@ -112,7 +108,9 @@ public class Settings {
     }
     
     public static Date getOldestAllowable() {
-        return oldestAllowable;
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, - maxSampleAge);
+        return cal.getTime();
     }
     
     public static int getMaxSampleAge() {

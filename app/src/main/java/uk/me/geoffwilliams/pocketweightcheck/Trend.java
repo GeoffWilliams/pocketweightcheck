@@ -45,7 +45,7 @@ public class Trend {
             
             // always the latest
             double lastTrend = weights.get(weights.size() - 1).getTrend();
-            
+            Log.d(TAG, "sample size: " + weights.size());
             Log.d(TAG, "earliest weight: " + firstTrend );
             Log.d(TAG, "latest weight: " + lastTrend);
 

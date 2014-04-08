@@ -108,11 +108,7 @@ public class TimePickerFragmentTest extends TestSupport {
         // we must first set the DATE so that decreasing by
         // one minute in TIME will cause rejection
         
-        // Tests can fail if DST offset has changed within our
-        // acceptable date range - workaround by using UTC...
-        TimeZone utc = TimeZone.getTimeZone("UTC");
-        Calendar cal = Calendar.getInstance(utc);
-        //Calendar cal = GregorianCalendar.getInstance();
+        Calendar cal = GregorianCalendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, - Settings.getMaxSampleAge());
         Log.d(TAG, "Computed old DATE: " + cal.getTime().toString());
         
@@ -124,8 +120,7 @@ public class TimePickerFragmentTest extends TestSupport {
         
         // compute a time that is too old
         cal.add(Calendar.MINUTE, -5);
-        Log.d(TAG, "Computed old TIME: " + cal.getTime().toString());
-        
+        Log.d(TAG, "Computed old TIME: " + cal.getTime().toString());        
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
