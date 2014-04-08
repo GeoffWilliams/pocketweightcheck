@@ -15,7 +15,8 @@
             android:layout_width="fill_parent"
             android:layout_height="250dip"
             android:orientation="vertical"
-            android:id="@+id/graphLayout"/>
+            android:id="@+id/graphLayout"
+            android:padding="10dip"/>
 
         <!-- table of stats -->        
         <TableLayout 
