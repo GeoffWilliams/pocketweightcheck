@@ -2,7 +2,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:id="@+id/mainActivity">
+    android:id="@+id/mainActivity"
+    android:background="#FF000000">
 
     <!-- graphs and stats -->
     <LinearLayout

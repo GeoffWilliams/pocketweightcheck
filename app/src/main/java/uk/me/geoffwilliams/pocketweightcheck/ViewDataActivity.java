@@ -148,7 +148,7 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
                     // delete row icon
                     deleteButton = new ImageButton(this);
                     deleteButton.setImageResource(R.drawable.delete);
-                    deleteButton.setBackgroundColor(Color.BLACK);
+                    deleteButton.setBackground(null);
                     deleteButton.setOnClickListener(
                             new View.OnClickListener() {
                                 private final Weight targetWeight = weight;

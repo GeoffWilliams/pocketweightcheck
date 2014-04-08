@@ -19,8 +19,11 @@
 package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +31,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowHandler;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.FragmentTestUtil;
+import java.util.Date;
 
 import uk.me.geoffwilliams.pocketweightcheck.dao.MockDaoHelper;
 
@@ -150,5 +154,38 @@ public class WeightEntryDialogTest extends TestSupport{
         assertFalse(fragment.isVisible());
     }
 
+    @Test
+    public void testNewDialogFreshDate() {
+        // each new weight entry dialogue should have a fresh (today's)
+        // date set - otherwise you can accidentally enter data with an
+        // old date
+        
+        // first set an old date and have it accepted
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        assertTrue(fragmentActivity != null);
 
+        weightEntryEditText.setText("80.8");
+        DateUtils dateUtils = fragment.getDateUtils();
+        
+        // compute an old date
+        Calendar cal = GregorianCalendar.getInstance();
+        // yesterday
+        cal.add(Calendar.DAY_OF_YEAR, - 1);
+        
+        dateUtils.setDate(cal.getTime());
+        okButton.performClick();
+        
+        // now reshow the dialog and make sure the has been reset
+        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        Calendar currentCal = GregorianCalendar.getInstance();
+        Calendar dialogCal = GregorianCalendar.getInstance();
+        dialogCal.setTime(dateUtils.getDate());
+                
+        // check date is set to current time
+        assertEquals(currentCal.get(Calendar.YEAR), dialogCal.get(Calendar.YEAR));
+        assertEquals(currentCal.get(Calendar.MONTH), dialogCal.get(Calendar.MONTH));
+        assertEquals(currentCal.get(Calendar.DAY_OF_MONTH), dialogCal.get(Calendar.DAY_OF_MONTH));
+        assertEquals(currentCal.get(Calendar.HOUR_OF_DAY), dialogCal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(currentCal.get(Calendar.MINUTE), dialogCal.get(Calendar.MINUTE));
+    }
 }

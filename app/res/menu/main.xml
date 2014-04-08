@@ -4,12 +4,13 @@
               android:title="Enter Weight"
               android:icon="@drawable/enter"
               android:showAsAction="ifRoom"/>
-        
+        <!--
+        not implemented...
         <item android:id="@+id/importExportItem" 
               android:title="Import/Export" 
               android:showAsAction="ifRoom"
               android:icon="@drawable/import_export"/>
-               
+        -->       
         <item android:id="@+id/viewItem" 
               android:title="View data"
               android:icon="@drawable/view_data"

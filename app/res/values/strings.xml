@@ -20,10 +20,10 @@
     <string name="msgError">Sorry, an error occurred</string>
     <string name="msgNoData">Not enough data yet...</string>
     <string name="msgLatestWeight">Latest weight</string>
-    <string name="msgMaxWeight">Maximum weight</string>
-    <string name="msgMinWeight">Minimum weight</string>
+    <string name="msgMaxWeight">Max weight</string>
+    <string name="msgMinWeight">Min weight</string>
     <string name="msgBmi">BMI</string>
-    <string name="msgTrend">trend</string>
+    <string name="msgTrend">Trend</string>
     <string name="msgBmiNotAvailable">BMI not available - did you enter your height?</string>
     <string name="msgPrefsTargetWeight">Target weight in KG</string>
     <string name="msgPrefsHeight">Your height in Metres</string>
@@ -32,17 +32,17 @@
         <item>Very severely underweight</item>
         <item>Severely underweight</item>
         <item>Underweight</item>
-        <item>Normal (healthy weight)</item>
+        <item>Normal</item>
         <item>Overweight</item>
-        <item>Obese Class I (Moderately obese)</item>
-        <item>Obese Class II (Severely obese)</item>
-        <item>Obese Class III (Very severely obese)</item> 	
+        <item>Obese Class I</item>
+        <item>Obese Class II</item>
+        <item>Obese Class III</item> 	
     </string-array>
 
     <string-array name="trendCategory">
         <item>Not available</item>
-        <item>Making progress!</item>
+        <item>Making progress</item>
         <item>Stable</item>
-        <item>Action needed!</item>
+        <item>Action needed</item>
     </string-array>
 </resources>

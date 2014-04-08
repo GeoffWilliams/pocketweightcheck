@@ -18,7 +18,6 @@
  */
 package uk.me.geoffwilliams.pocketweightcheck;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -28,6 +27,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Date;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
@@ -35,7 +35,6 @@ import org.androidannotations.annotations.EFragment;
 
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringRes;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
@@ -162,6 +161,17 @@ public class WeightEntryDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.setTitle(weightEntryDialogTitle);
+        
+        // reset the current date
+        dateUtils.setDate(new Date());
         return dialog; 
+    }
+    
+    /**
+     * Test support
+     * @return 
+     */
+    public DateUtils getDateUtils() {
+        return dateUtils;
     }
 }

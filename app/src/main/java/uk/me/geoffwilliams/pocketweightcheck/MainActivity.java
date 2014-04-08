@@ -133,9 +133,9 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
             case R.id.enterWeightItem:
                 showWeightEntryDialog();
                 return true;
-            case R.id.importExportItem:
-                // not supported yet
-                return true;
+//            case R.id.importExportItem:
+//                // not supported yet
+//                return true;
             case R.id.viewItem:
                 intent = new Intent(this, ViewDataActivity_.class);
                 startActivity(intent);

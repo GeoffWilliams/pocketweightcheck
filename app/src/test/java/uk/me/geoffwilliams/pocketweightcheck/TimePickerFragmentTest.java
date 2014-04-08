@@ -21,6 +21,7 @@ package uk.me.geoffwilliams.pocketweightcheck;
 import android.util.Log;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,7 +107,12 @@ public class TimePickerFragmentTest extends TestSupport {
         // since we are only setting the TIME in the dialog
         // we must first set the DATE so that decreasing by
         // one minute in TIME will cause rejection
-        Calendar cal = GregorianCalendar.getInstance();
+        
+        // Tests can fail if DST offset has changed within our
+        // acceptable date range - workaround by using UTC...
+        TimeZone utc = TimeZone.getTimeZone("UTC");
+        Calendar cal = Calendar.getInstance(utc);
+        //Calendar cal = GregorianCalendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, - Settings.getMaxSampleAge());
         Log.d(TAG, "Computed old DATE: " + cal.getTime().toString());
         
