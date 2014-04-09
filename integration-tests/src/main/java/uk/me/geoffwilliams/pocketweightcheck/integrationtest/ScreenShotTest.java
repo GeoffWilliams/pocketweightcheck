@@ -22,50 +22,108 @@ import com.github.rtyley.android.screenshot.celebrity.Screenshots;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import android.app.Activity;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.UiThreadTest;
 import android.test.suitebuilder.annotation.LargeTest;
-import uk.me.geoffwilliams.pocketweightcheck.MainActivity;
+import android.util.Log;
+import android.view.KeyEvent;
+import uk.me.geoffwilliams.pocketweightcheck.MainActivity_;
 
 import com.robotium.solo.Solo;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import uk.me.geoffwilliams.pocketweightcheck.R;
+import uk.me.geoffwilliams.pocketweightcheck.Settings;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelper;
+import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
+import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 
 /**
  *
  * @author geoff
  */
-public class ScreenShotTest extends ActivityInstrumentationTestCase2<MainActivity> {
+public class ScreenShotTest extends ActivityInstrumentationTestCase2<MainActivity_> {
 
     private final static String TAG = "ScreenShotTest";
+    private final double MAX_SAMPLE_WEIGHT = 92.4f;
+    private final double MIN_SAMPLE_WEIGHT = 40f;
+
+    // yes my laptop really is that slow... :(
+    private final int DELAY = 15000;
     
     private Solo solo;
+    private DaoHelper daoHelper; 
+    Activity activity;
 
     public ScreenShotTest() {
-        super(MainActivity.class);
+        super(MainActivity_.class);
     }
 
     @Override
     public void setUp() throws Exception {
         solo = new Solo(getInstrumentation());
+        activity = startActivitySync(MainActivity_.class);
+        
+        Settings.setRefreshUi(false);
+        daoHelper = ((MainActivity_) activity).getDaoHelper();
+        insertSampleData(-1.1f);
+        Settings.setRefreshUi(true);
+        
+        // set a height and target weight
+        PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                .putString("targetWeight", "70")
+                .putString("height", "1.7")
+                .commit();
+
+        // restart activity to get refreshed data...
+        solo.finishOpenedActivities();
+        activity = startActivitySync(MainActivity_.class);
+                
     }
 
     @Override
     protected void tearDown() throws Exception {
         solo.finishOpenedActivities();
     }
+    
+    private void insertSampleData(float increment) {
+        // insert a bunch of samples
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(Settings.getOldestAllowable());
 
-    @LargeTest
-    public void testScreenShot() throws Exception {
-        driveMainActivity();
-
+        
+        for (int i = 0; i <= Settings.getMaxSampleAge(); i++) {
+            Double value = MAX_SAMPLE_WEIGHT + ((i+1) * increment);
+            value = Math.max(MIN_SAMPLE_WEIGHT, value);
+            Weight weight = new Weight(cal.getTime(), value);
+            daoHelper.create(weight);
+            Log.d(TAG,"Added sample data:" + weight);
+            cal.add(Calendar.DAY_OF_YEAR, + 1);
+        }
     }
 
+    
+    @LargeTest
+    public void testScreenShot() throws Exception {
 
-    private void driveMainActivity() throws InterruptedException {
-        Activity activity = startActivitySync(MainActivity.class);
-        Thread.sleep(1000);
+        // initial render
+        solo.sleep(DELAY);
+        
+        // weight entry dialog
         Screenshots.poseForScreenshot();
-        Thread.sleep(1000);
+        solo.clickOnButton("Cancel");
+
+        // graph + table
+        solo.sleep(DELAY);
         Screenshots.poseForScreenshot();
 
+        // view data
+        solo.sleep(DELAY);
+        solo.clickOnActionBarItem(R.id.viewItem);
+        solo.sleep(DELAY);
+        Screenshots.poseForScreenshot();
+        
         activity.finish();
     }
 

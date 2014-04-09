@@ -244,5 +244,13 @@ public class MainActivity extends FragmentActivity implements DataChangeListener
             }
         }
     }
+    
+    /**
+     * For robotium testing
+     * @return 
+     */
+    public DaoHelper getDaoHelper() {
+        return daoHelper;
+    }
 }
 
