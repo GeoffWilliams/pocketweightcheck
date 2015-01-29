@@ -25,11 +25,14 @@ import android.widget.EditText;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import static org.junit.Assert.*;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowHandler;
 import org.robolectric.shadows.ShadowToast;
+import org.robolectric.util.ActivityController;
 import org.robolectric.util.FragmentTestUtil;
 import java.util.Date;
 
@@ -65,10 +68,10 @@ public class WeightEntryDialogTest extends TestSupport{
         fragmentTransaction.commit();
 
         assertNotNull(fragment);
-        assertNotNull(fragment.getActivity());
+//        assertNotNull(fragment.getActivity());
 
         FragmentTestUtil.startFragment(fragment);
-        assertNotNull(fragment);
+//        assertNotNull(fragment);
 
         // replace the DAO with our mock one that always succeeds...
         fragment.daoHelper = new MockDaoHelper();
@@ -80,8 +83,14 @@ public class WeightEntryDialogTest extends TestSupport{
 
     }
 
+    @After
+    public void tearDown() {
+       fragmentActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+    }
+
     private void enterText(String text) {
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        //fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         assertTrue(fragmentActivity != null);
 
         weightEntryEditText.setText(text);
@@ -148,7 +157,8 @@ public class WeightEntryDialogTest extends TestSupport{
     
     @Test
     public void testCancel() throws Exception {
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        //fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         assertTrue(fragment.isVisible());
         cancelButton.performClick();
         assertFalse(fragment.isVisible());
@@ -161,7 +171,8 @@ public class WeightEntryDialogTest extends TestSupport{
         // old date
         
         // first set an old date and have it accepted
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        //fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         assertTrue(fragmentActivity != null);
 
         weightEntryEditText.setText("80.8");
@@ -174,9 +185,13 @@ public class WeightEntryDialogTest extends TestSupport{
         
         dateUtils.setDate(cal.getTime());
         okButton.performClick();
+
+        // restart dialog
+        FragmentTestUtil.startFragment(fragment);
         
         // now reshow the dialog and make sure the has been reset
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        //fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         Calendar currentCal = GregorianCalendar.getInstance();
         Calendar dialogCal = GregorianCalendar.getInstance();
         dialogCal.setTime(dateUtils.getDate());

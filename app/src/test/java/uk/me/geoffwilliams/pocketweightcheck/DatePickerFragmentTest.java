@@ -21,11 +21,16 @@ package uk.me.geoffwilliams.pocketweightcheck;
 import android.util.Log;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+
 import static org.junit.Assert.*;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowToast;
+import org.robolectric.util.ActivityController;
 import org.robolectric.util.FragmentTestUtil;
 
 /**
@@ -37,7 +42,9 @@ public class DatePickerFragmentTest extends TestSupport {
     private DatePickerFragment_ fragment;
     
     @Before
-    public void setUp() {   
+    public void setUp() {
+        Locale.setDefault(Locale.US);
+
         Settings.setLoadData(false);
         
         fragmentActivity = Robolectric.buildActivity(MainActivity_.class)
@@ -48,21 +55,24 @@ public class DatePickerFragmentTest extends TestSupport {
                 .get();
 
         fragment = new DatePickerFragment_();
-        
+
         fragmentManager = fragmentActivity.getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.mainActivity, fragment);
         fragmentTransaction.commit();
 
         assertNotNull(fragment);
-        assertNotNull(fragment.getActivity());
 
         FragmentTestUtil.startFragment(fragment);
-        assertNotNull(fragment);
+        assertNotNull(fragment.getActivity());
+
 
     }
 
-
+    @After
+    public void tearDown() {
+        fragmentActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+    }
 
     @Test
     public void testDateTooOldFail() throws Exception {
@@ -76,7 +86,7 @@ public class DatePickerFragmentTest extends TestSupport {
         assertNotNull(fragment);
 
         // send for processing
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         fragment.onDateSet(null,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -96,7 +106,7 @@ public class DatePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         fragment.onDateSet(null,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -114,7 +124,7 @@ public class DatePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         fragment.onDateSet(null, 
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),

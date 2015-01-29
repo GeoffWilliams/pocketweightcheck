@@ -99,7 +99,7 @@ public class WeightEntryDialog extends DialogFragment {
     }
     
     @Click void cancelButton() {
-        dismiss();
+        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();       // dismiss();
     }
 
     @Click
@@ -116,7 +116,8 @@ public class WeightEntryDialog extends DialogFragment {
                 try {
                     save();
                     message = msgSaved;
-                    dismiss();
+                    //dismiss();
+                    getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
                 } catch (RuntimeException e) {
                     Log.e(TAG,"error saving weight",e);
                     message = msgError;

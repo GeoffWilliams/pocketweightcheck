@@ -20,13 +20,17 @@ package uk.me.geoffwilliams.pocketweightcheck;
 
 import android.util.Log;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import static org.junit.Assert.*;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowToast;
+import org.robolectric.util.ActivityController;
 import org.robolectric.util.FragmentTestUtil;
 /**
  *
@@ -56,13 +60,19 @@ public class TimePickerFragmentTest extends TestSupport {
         fragmentTransaction.commit();
 
         assertNotNull(fragment);
-        assertNotNull(fragment.getActivity());
 
         FragmentTestUtil.startFragment(fragment);
-        assertNotNull(fragment);
+        assertNotNull(fragment.getActivity());
 
     }
-    
+
+    @After
+    public void tearDown() {
+        fragmentActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        // equivalent to reset singleton...
+        DateUtils_.getInstance_(fragmentActivity).setDate(new Date());
+    }
+
     @Test
     public void testTimeAccepted() throws Exception {
         Calendar cal = GregorianCalendar.getInstance();
@@ -70,7 +80,8 @@ public class TimePickerFragmentTest extends TestSupport {
         Log.d(TAG, "cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+//        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         fragment.onTimeSet(null, 
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE));
@@ -91,7 +102,8 @@ public class TimePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+//        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         fragment.onTimeSet(null, 
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE));
@@ -124,7 +136,8 @@ public class TimePickerFragmentTest extends TestSupport {
         Log.d(TAG,"cal date " + cal.getTime().toString());
 
         // send for processing
-        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+//        fragment.show(fragmentActivity.getSupportFragmentManager(), "tag");
+        ActivityController.of(fragment.getActivity()).visible();
         fragment.onTimeSet(null, 
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE));

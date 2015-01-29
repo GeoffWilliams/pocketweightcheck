@@ -61,7 +61,8 @@ public class TimePickerFragment extends DialogFragment
         cal.set(Calendar.MINUTE, minute);
 
         if (utils.setDate(cal.getTime())) {
-            dismiss();
+            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            //dismiss();
         }
     }
 }

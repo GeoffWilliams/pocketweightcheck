@@ -58,7 +58,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         cal.set(year, month, day);
 
         if (utils.setDate(cal.getTime())) {
-            dismiss();
+            getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+            //dismiss();
         }
 
     }
