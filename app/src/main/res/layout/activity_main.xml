@@ -2,8 +2,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:id="@+id/mainActivity"
-    android:background="#FF000000">
+    android:id="@+id/mainActivity">
 
     <!-- graphs and stats -->
     <LinearLayout
@@ -22,7 +21,7 @@
 
         <!-- table of stats -->        
         <TableLayout 
-            android:id="@+id/statsLayout"
+            android:id="@+id/statsTable"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:stretchColumns="*">

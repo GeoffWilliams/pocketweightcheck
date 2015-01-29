@@ -22,6 +22,7 @@ package uk.me.geoffwilliams.pocketweightcheck.dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  *
@@ -79,7 +80,7 @@ public class RecordWeight {
 
     @Override
     public String toString() {
-        return String.format("RecordWeight:  {key: %s; value: %.2f sampleTime: %s",
+        return String.format(Locale.US, "RecordWeight:  {key: %s; value: %.2f sampleTime: %s",
                 key, value, sampleTime);
     }
     

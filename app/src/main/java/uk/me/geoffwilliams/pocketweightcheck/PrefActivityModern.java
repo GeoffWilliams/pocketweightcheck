@@ -42,7 +42,7 @@ public class PrefActivityModern extends PreferenceActivity {
 
     }
     
-    public class PrefFragment extends PreferenceFragment {
+    public static class PrefFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(final Bundle savedInstanceState) {

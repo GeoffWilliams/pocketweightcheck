@@ -6,4 +6,6 @@ target
 .idea
 bin
 gen
-
+build
+app/build
+.gradle

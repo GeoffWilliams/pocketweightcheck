@@ -18,7 +18,7 @@
     <string name="msgTooOld">measurement is too old!</string>
     <string name="msgFuture">measurement cannot be in the future</string>
     <string name="msgError">Sorry, an error occurred</string>
-    <string name="msgNoData">Not enough data yet...</string>
+    <string name="msgNoData">Not enough data yet&#8230;</string>
     <string name="msgLatestWeight">Latest weight</string>
     <string name="msgMaxWeight">Max weight</string>
     <string name="msgMinWeight">Min weight</string>
