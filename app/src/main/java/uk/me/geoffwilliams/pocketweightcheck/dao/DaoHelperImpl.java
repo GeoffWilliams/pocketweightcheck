@@ -241,7 +241,12 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
 
     @Override
     public int delete(Weight weight) {
-        int count = weightDao.delete(weight);
+        int count;
+        if (weight.isArchived()) {
+            count = archivedWeightDao.delete(new ArchivedWeight(weight));
+        } else {
+            count = weightDao.delete(weight);
+        }
         dataChanged();
         return count;
     }
@@ -289,6 +294,12 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         return getWeights(ascending, true);
     }
 
+    /**
+     *
+     * @param ascending true to order dates oldest to newest, false to order dates newest to oldest
+     * @param getArchived
+     * @return
+     */
     private List<Weight> getWeights(boolean ascending, boolean getArchived) {
         List<Weight> weights;
         QueryBuilder<Weight, Integer> queryBuilder = weightDao.queryBuilder();
@@ -299,9 +310,8 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
 
             // get the archived weights too
             if (getArchived) {
-                // ascending order, archived weights go at the end of the array otherwise they got at
-                // the start
-                int pos = ascending ? weights.size() : 0;
+                // ascending order (oldest first), descending order (oldest last)
+                int pos = ascending ? 0 : weights.size();
 
                 weights.addAll(pos, getArchivedWeights(ascending));
             }

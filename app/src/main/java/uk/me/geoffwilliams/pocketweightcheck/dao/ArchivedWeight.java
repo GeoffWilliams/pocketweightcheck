@@ -65,6 +65,13 @@ public class ArchivedWeight extends Weight {
 //                sampleTime, weight, trend);
 //    }
 //
+    public ArchivedWeight() {}
+
+    public ArchivedWeight(Weight weight) {
+        setArchived(true);
+        setSampleTime(weight.getSampleTime());
+        setWeight(weight.getWeight());
+    }
 
     public Weight toWeightObject() {
         Weight w = new Weight(sampleTime, weight);

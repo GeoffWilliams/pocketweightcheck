@@ -71,7 +71,7 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
     @StringRes
     String weightLabel;
 
-    private static final String TAG = "pocketweightcheck.ViewDataActivity";
+    private static final String TAG = "pwc.ViewDataActivity";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +126,7 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
                 // data
                 TextView dateTextView;
                 TextView weightTextView;
+                TextView archivedTextView;
                 ImageButton deleteButton;
 
                 for (final Weight weight : weights) {
@@ -136,14 +137,22 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
                     
                     dateTextView = new TextView(this);
                     weightTextView = new TextView(this);
+                    archivedTextView = new TextView(this);
 
+                    // date
                     dateTextView.setText(
                             TextFormatter.formatDate(this, weight.getSampleTime()));
                     dateTextView.setPadding(2, 2, 2, 2);
 
+                    // recorded weight
                     weightTextView.setText(
                             TextFormatter.formatDouble(weight.getWeight()));
                     weightTextView.setPadding(2, 2, 2, 2);
+
+                    // 'sigma' to indicate averaged data
+                    if (weight.isArchived()) {
+                        archivedTextView.setText("\u03A3");
+                    }
 
                     // delete row icon
                     deleteButton = new ImageButton(this);
@@ -164,6 +173,7 @@ public class ViewDataActivity extends FragmentActivity implements DataChangeList
                     // attach the row to gui
                     row.addView(dateTextView);
                     row.addView(weightTextView);
+                    row.addView(archivedTextView);
                     row.addView(deleteButton);
 
                     Log.d(TAG, "added row...");
