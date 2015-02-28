@@ -57,6 +57,12 @@ public class Settings {
      * Maximum age to accept for entered data (days) 
      */
     private static int maxSampleAge = 30;
+
+
+    /**
+     * Maximum age to keep detailed data (days)
+     */
+    private static int maxDetailAge = 60;
     
     /**
      * Minimum amount of points to allow graph to display
@@ -106,13 +112,41 @@ public class Settings {
     public static void setMinAllowedWeight(int minAllowedWeight) {
         Settings.minAllowedWeight = minAllowedWeight;
     }
-    
+
+
+    /**
+     * Maximum sample age to accept (as timestamp)
+     * @return
+     */
     public static Date getOldestAllowable() {
         Calendar cal = GregorianCalendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, - maxSampleAge);
         return cal.getTime();
     }
-    
+
+    /**
+     * Data older then this timestamp should be archived
+     * @return
+     */
+    public static Date archiveAfter() {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, - maxDetailAge);
+        return cal.getTime();
+    }
+
+    public static int getMaxDetailAge() {
+        return maxDetailAge;
+    }
+
+    public static void setMaxDetailAge(int maxDetailAge) {
+        Settings.maxDetailAge = maxDetailAge;
+    }
+
+
+    /**
+     * Maximum sample age to accept (days)
+     * @return
+     */
     public static int getMaxSampleAge() {
         return maxSampleAge;
     }
@@ -171,6 +205,8 @@ public class Settings {
 
     public static void setTrendSamples(int trendSamples) {
         Settings.trendSamples = trendSamples;
-    }   
+    }
+
+
 
 }

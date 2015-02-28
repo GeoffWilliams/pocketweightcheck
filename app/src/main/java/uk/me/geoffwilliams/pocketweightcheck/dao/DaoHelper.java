@@ -53,6 +53,8 @@ public interface DaoHelper {
     public void deleteAllData();
     
     public long getWeightCount();
+
+    public long getArchivedWeightCount();
     
     public void registerListener(DataChangeListener listener);
     

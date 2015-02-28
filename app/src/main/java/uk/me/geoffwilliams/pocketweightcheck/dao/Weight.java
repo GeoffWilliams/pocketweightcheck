@@ -35,20 +35,22 @@ public class Weight {
     public final static String COL_WEIGHT = "weight";
     
     @DatabaseField(id = true, columnName = COL_SAMPLE_TIME)
-    private Date sampleTime;
+    protected Date sampleTime;
     
     @DatabaseField(canBeNull = false, columnName = COL_WEIGHT)
-    private Double weight;
+    protected Double weight;
+
+    private boolean archived = false;
 
     private Double trend = null;
     
     public Weight() {}
-    
+
     public Weight(Date date, Double weight) {
         this.sampleTime = date;
         this.weight = weight;
     }
-    
+
     public Weight(Date date, Double weight, Double trend) {
         this.sampleTime = date;
         this.weight = weight;
@@ -84,5 +86,12 @@ public class Weight {
         return String.format(Locale.US, "Weight: {sampleTime:%s;weight:%.2f;trend:%.2f}",
                 sampleTime, weight, trend);
     }
-    
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
 }

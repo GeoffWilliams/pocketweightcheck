@@ -45,8 +45,8 @@ public class TrendTest extends TestSupport {
     @Test
     public void testTrendStable() {
         List weights = new ArrayList<Weight>();
-        weights.add(new Weight(new Date(), -1d, 88.8));
-        weights.add(new Weight(new Date(), -1d, 88.7));
+        weights.add(new Weight(new Date(), -1d, 88.8d));
+        weights.add(new Weight(new Date(), -1d, 88.7d));
         int status = trend.calculateTrend(target, weights);
         assertEquals(Trend.TREND_STABLE, status);
         

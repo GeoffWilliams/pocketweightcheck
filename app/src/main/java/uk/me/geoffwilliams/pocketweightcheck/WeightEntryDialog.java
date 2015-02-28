@@ -46,7 +46,7 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
 @EFragment(R.layout.weight_entry)
 public class WeightEntryDialog extends DialogFragment {
     
-    private final static String TAG = "pocketweightcheck.WeightEntryDialog";
+    private final static String TAG = "pwc.WeightEntryDialog";
 
     private double enteredWeight = 0;
 

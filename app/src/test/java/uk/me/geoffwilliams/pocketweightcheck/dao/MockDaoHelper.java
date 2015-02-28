@@ -140,6 +140,11 @@ public class MockDaoHelper implements DaoHelper {
     }
 
     @Override
+    public long getArchivedWeightCount() {
+        throw new UnsupportedOperationException("haven't coded this yet...");
+    }
+
+    @Override
     public void registerListener(DataChangeListener listener) {
         if (! dataChangeListeners.contains(listener)) {
             dataChangeListeners.add(listener);

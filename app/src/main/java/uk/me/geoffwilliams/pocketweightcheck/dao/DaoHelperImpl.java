@@ -31,15 +31,15 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.sharedpreferences.Pref;
+
 import uk.me.geoffwilliams.pocketweightcheck.Bmi;
 import uk.me.geoffwilliams.pocketweightcheck.Settings;
 import uk.me.geoffwilliams.pocketweightcheck.DataChangeListener;
-import uk.me.geoffwilliams.pocketweightcheck.Prefs_;
 import uk.me.geoffwilliams.pocketweightcheck.Bmi_;
 import uk.me.geoffwilliams.pocketweightcheck.PrefsWrapper;
 import uk.me.geoffwilliams.pocketweightcheck.Trend;
@@ -55,10 +55,11 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     private static final String DATABASE_NAME = "pocketweightcheck.db";
     // any time you make changes to your database objects, you may have to increase the database version
     private static final int DATABASE_VERSION = 1;
-    private static final String TAG = "pocketweightcheck.DaoHelper";
+    private static final String TAG = "pwc.DaoHelper";
     private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
  
     private RuntimeExceptionDao<Weight, Integer> weightDao = null;
+    private RuntimeExceptionDao<ArchivedWeight, Integer> archivedWeightDao = null;
     private RuntimeExceptionDao<RecordWeight, Integer> recordWeightDao = null;
     private Trend trend = new Trend();
     
@@ -72,6 +73,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         weightDao = getWeightDao();
         recordWeightDao = getRecordWeightDao();
+        archivedWeightDao = getArchivedWeightDao();
     }
 
 
@@ -81,6 +83,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
             Log.i(TAG, "creating initial database schema");
             TableUtils.createTable(connectionSource, Weight.class);
             TableUtils.createTable(connectionSource, RecordWeight.class);
+            TableUtils.createTable(connectionSource, ArchivedWeight.class);
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
         }
@@ -103,6 +106,13 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
             recordWeightDao = getRuntimeExceptionDao(RecordWeight.class);
         }
         return recordWeightDao;
+    }
+
+    private RuntimeExceptionDao<ArchivedWeight, Integer> getArchivedWeightDao() {
+        if (archivedWeightDao == null) {
+            archivedWeightDao = getRuntimeExceptionDao(ArchivedWeight.class);
+        }
+        return archivedWeightDao;
     }
 
     private void updateExtrema(RecordWeight recordWeight, Weight weight) {
@@ -143,14 +153,56 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         }
     }
 
+    /**
+     * Average (mean) a list of weights into a single ArchivedWeight object
+     *
+     *
+     * @param weights
+     * @return calculated average date and weight or null if passed in list empty or null
+     */
+    public ArchivedWeight averageData(List<Weight> weights) {
+        ArchivedWeight average;
+        if (weights != null && weights.size() > 0) {
+            double weightSum = 0.0d;
+            long dateSum = 0l;
+            average = new ArchivedWeight();
+
+            for (Weight w : weights) {
+                weightSum += w.getWeight();
+                dateSum += w.getSampleTime().getTime();
+            }
+            average.setWeight(weightSum/weights.size());
+            average.setSampleTime(new Date(dateSum/weights.size()));
+        } else {
+            average = null;
+        }
+        return average;
+    }
+
     
-    private void deleteOldData() {
-        DeleteBuilder<Weight, Integer> deleteBuilder = weightDao.deleteBuilder();
-        Where<Weight, Integer> where = deleteBuilder.where();
+    private void archiveOldData() {
+        // average the old data
+        Log.d(TAG, String.format("inside archiveOldData(), cutoff date %s",
+                Settings.archiveAfter().toString()));
+        QueryBuilder<Weight, Integer> queryBuilder = weightDao.queryBuilder();
+        queryBuilder.orderBy(Weight.COL_SAMPLE_TIME, true);
+        Where<Weight, Integer> where = queryBuilder.where();
         try {
-            where.lt(Weight.COL_SAMPLE_TIME, Settings.getOldestAllowable());
-            deleteBuilder.delete();
-            dataChanged();
+            where.lt(Weight.COL_SAMPLE_TIME, Settings.archiveAfter());
+            List<Weight> weights = queryBuilder.query();
+            if (! weights.isEmpty()) {
+                Log.d(TAG, String.format("archiving %d weights", weights.size()));
+                ArchivedWeight archive = averageData(weights);
+                archivedWeightDao.create(archive);
+
+                // then delete it
+                DeleteBuilder<Weight, Integer> deleteBuilder = weightDao.deleteBuilder();
+                where = deleteBuilder.where();
+
+                where.lt(Weight.COL_SAMPLE_TIME, Settings.archiveAfter());
+                int deleted = deleteBuilder.delete();
+                Log.d(TAG, String.format("Records deleted: %d", deleted));
+            }
         } catch (SQLException e) {
             throw new RuntimeException("wrapped SQLException", e);
         }
@@ -168,7 +220,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
                         weightDao.create(weight);
                         
                         // remove any data that is too old
-                        deleteOldData();
+                        archiveOldData();
 
                         // cleanup old data
                         // save the min weight (if needed)
@@ -213,13 +265,47 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         }
         return res.get(0);
     }
-    
+
+    private List<Weight> getArchivedWeights(boolean ascending) {
+        List<ArchivedWeight> archivedWeights;
+        List<Weight> weights = new ArrayList<Weight>();
+        QueryBuilder<ArchivedWeight, Integer> queryBuilder = archivedWeightDao.queryBuilder();
+        queryBuilder.orderBy(Weight.COL_SAMPLE_TIME, ascending);
+
+        try {
+            archivedWeights = queryBuilder.query();
+            for (ArchivedWeight archivedWeight : archivedWeights) {
+                weights.add(archivedWeight.toWeightObject());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("wrapped SQLException", e);
+        }
+
+        return weights;
+    }
+
+
     private List<Weight> getWeights(boolean ascending) {
+        return getWeights(ascending, true);
+    }
+
+    private List<Weight> getWeights(boolean ascending, boolean getArchived) {
         List<Weight> weights;
         QueryBuilder<Weight, Integer> queryBuilder = weightDao.queryBuilder();
         queryBuilder.orderBy(Weight.COL_SAMPLE_TIME, ascending);
+
         try {
             weights = queryBuilder.query();
+
+            // get the archived weights too
+            if (getArchived) {
+                // ascending order, archived weights go at the end of the array otherwise they got at
+                // the start
+                int pos = ascending ? weights.size() : 0;
+
+                weights.addAll(pos, getArchivedWeights(ascending));
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException("wrapped SQLException", e);
         }
@@ -257,6 +343,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
         try {
             TableUtils.clearTable(connectionSource, Weight.class);
             TableUtils.clearTable(connectionSource, RecordWeight.class);
+            TableUtils.clearTable(connectionSource, ArchivedWeight.class);
             dataChanged();
     
         } catch (SQLException e) {
@@ -267,6 +354,11 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     @Override
     public long getWeightCount() {
         return weightDao.countOf();
+    }
+
+    @Override
+    public long getArchivedWeightCount() {
+        return archivedWeightDao.countOf();
     }
 
     @Override
@@ -304,7 +396,7 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
     public Double getBmi() {
         Double bmiValue;
         
-        // if unset in prefs will be primative zero...
+        // if unset in prefs will be primitive zero...
         float height = prefs.getHeight();
         Weight latestWeight = getLatestWeight();
         if (latestWeight == null || height == 0) {

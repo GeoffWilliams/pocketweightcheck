@@ -23,6 +23,9 @@ import android.util.Log;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -32,6 +35,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.robolectric.Robolectric;
+
+import uk.me.geoffwilliams.pocketweightcheck.dao.ArchivedWeight;
 import uk.me.geoffwilliams.pocketweightcheck.dao.DaoHelperImpl;
 import uk.me.geoffwilliams.pocketweightcheck.dao.RecordWeight;
 import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
@@ -53,7 +58,7 @@ public class DAOTest extends TestSupport {
     private float targetWeight = 80.1f;
     private Bmi_ bmi;
     private Prefs_ prefs;
-    private static final String TAG = "pocketweightcheck.DAOTest";
+    private static final String TAG = "pwc.DAOTest";
 
     
     public DAOTest() {
@@ -80,7 +85,9 @@ public class DAOTest extends TestSupport {
         prefsWrapper.setPrefs(prefs);
         daoHelper.setPrefsWrapper(prefsWrapper);
 
-        
+        // restore defaults
+        Settings.setMaxSampleAge(30);
+        Settings.setMaxDetailAge(60);
     }
     /**
      * Delete all test data between tests
@@ -97,17 +104,13 @@ public class DAOTest extends TestSupport {
     private void insertSampleData() {
         insertSampleData(1);
     }
-    
-    private void insertSampleData(float increment) {
+
+    private void insertSampleData(float increment, float count) {
         // insert a bunch of samples
         Calendar cal = GregorianCalendar.getInstance();
-        Settings.setMaxSampleAge(3);
         cal.setTime(Settings.getOldestAllowable());
-        
-        // reduce the amount of samples to make the tests run quicker
-        
-        
-        for (int i = 0; i <= Settings.getMaxSampleAge(); i++) {
+
+        for (int i = 0; i <= count; i++) {
             Double value = MAX_SAMPLE_WEIGHT + ((i+1) * increment);
             value = Math.max(MIN_SAMPLE_WEIGHT, value);
             Weight weight = new Weight(cal.getTime(), value);
@@ -116,6 +119,12 @@ public class DAOTest extends TestSupport {
             sampleCount++;
             cal.add(Calendar.DAY_OF_YEAR, + 1);
         }
+    }
+    
+    private void insertSampleData(float increment) {
+        // reduce the amount of samples to make the tests run quicker
+        Settings.setMaxSampleAge(3);
+        insertSampleData(increment, Settings.getMaxSampleAge());
     }
 
     @Test
@@ -213,9 +222,9 @@ public class DAOTest extends TestSupport {
         assertFalse(weights.isEmpty());
 
         // check that the earliest record is not before the oldest allowable
-        // date
+        // date (older records are now averaged and archived :)
         Date oldestEntry = weights.get(0).getSampleTime();
-        Date oldestAllowable = Settings.getOldestAllowable();
+        Date oldestAllowable = Settings.archiveAfter();
         assertTrue(
                 oldestEntry.equals(oldestAllowable)
                 || oldestEntry.after(oldestAllowable));
@@ -389,5 +398,84 @@ public class DAOTest extends TestSupport {
         insertSampleData();
         prefs.targetWeight().put("0");
         assertEquals(Trend.TREND_ERROR, daoHelper.getTrend());
+    }
+
+
+    @Test
+    public void testAverageWeightCalculation() {
+        // test date and weight are calculated as mean
+        SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd");
+        List<Weight> input = new ArrayList<Weight>();
+        try {
+            input.add(new Weight(dateParser.parse("2015-01-30"), 100.0d));
+            input.add(new Weight(dateParser.parse("2015-01-1"), 50.0d));
+
+            ArchivedWeight output = daoHelper.averageData(input);
+            assertEquals((double) 75.0d, (double) output.getWeight(), 0.1d);
+            assertEquals("2015-01-15", dateParser.format(output.getSampleTime()));
+        } catch (ParseException e) {
+            fail("can't parse date for tests - error in test logic");
+        }
+
+    }
+
+    @Test
+    public void testOldDataArchived() {
+        // when we have >= 60 days worth data, take the last 30 days worth, average it and delete
+        // the source data
+        // tweak settings to allow old the data to be accepted
+        Settings.setMaxSampleAge(6);
+        Settings.setMaxDetailAge(6);
+        insertSampleData(1, 6);
+
+        // back to normal settings
+        Settings.setMaxDetailAge(3);
+
+        // insert a new record to trigger archival process
+        insertSampleData(1,1);
+
+        // there should now be data in the archived_weight table so do a query and count it
+        assertTrue(daoHelper.getArchivedWeightCount() > 0);
+    }
+
+    @Test
+    public void testOldDataRead() {
+        // tweak settings to allow old the data to be accepted
+        Settings.setMaxSampleAge(6);
+        Settings.setMaxDetailAge(6);
+        insertSampleData(1, 6);
+
+        // back to normal settings
+        Settings.setMaxDetailAge(3);
+
+        // insert a new record to trigger archival process
+        insertSampleData(1,1);
+
+        // check the archived weights come back when we ask for weights
+        List<Weight> weights = daoHelper.getWeightByDateAsc();
+
+        // last entry should be an instance of ArchivedWeight
+        assertTrue(weights.get(weights.size() - 1).isArchived());
+    }
+
+    @Test
+    public void testEmptyDataAveraged() {
+        // test that passing an empty list or null to be averaged returns null
+        assertNull(daoHelper.averageData(new ArrayList<Weight>()));
+        assertNull(daoHelper.averageData(null));
+    }
+
+    @Test
+    public void testArchivedWeightTypeConversion() {
+        // check all fields are copied correctly into new object
+        ArchivedWeight aw = new ArchivedWeight();
+        double sampleWeight = 88.0d;
+        Date sampleTime = new Date();
+        aw.setWeight(sampleWeight);
+        aw.setSampleTime(sampleTime);
+
+        Weight w = aw.toWeightObject();
+        assertEquals(sampleWeight, w.getWeight(), 0);
+        assertEquals(sampleTime.getTime(), w.getSampleTime().getTime());
     }
 }
