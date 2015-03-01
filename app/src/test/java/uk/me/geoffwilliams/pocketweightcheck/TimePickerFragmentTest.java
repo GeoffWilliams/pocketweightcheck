@@ -38,12 +38,16 @@ import org.robolectric.util.FragmentTestUtil;
  */
 public class TimePickerFragmentTest extends TestSupport {
     
-    private final static String TAG = "pocketweightcheck.TimePickerFragmentTest";
+    private final static String TAG = "pwc.TimePickerFragmentT";
     private TimePickerFragment_ fragment;
  
     @Before
     public void setUp() {      
         Settings.setRefreshUi(false);
+
+        // restore defaults - prevent cross-test contamination
+        Settings.setMaxSampleAge(30);
+        Settings.setMaxDetailAge(60);
         
         fragmentActivity = Robolectric.buildActivity(MainActivity_.class)
                 .create()
@@ -63,6 +67,8 @@ public class TimePickerFragmentTest extends TestSupport {
 
         FragmentTestUtil.startFragment(fragment);
         assertNotNull(fragment.getActivity());
+
+
 
     }
 
