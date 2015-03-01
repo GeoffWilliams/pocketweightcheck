@@ -44,7 +44,9 @@ android {
         applicationId "uk.me.geoffwilliams.pocketweightcheck"
         minSdkVersion 11
         targetSdkVersion 21
-        versionCode 1
+
+	// version numbers for play store - update both
+        versionCode 8
         versionName "1.2.0"
     }
     buildTypes {
