@@ -33,7 +33,7 @@ import org.androidannotations.annotations.res.StringRes;
  */
 @EBean(scope = EBean.Scope.Singleton)
 public class DateUtils {
-    private static final String TAG = "pocketweightcheck.DateUtils";
+    private static final String TAG = "pwc.DateUtils";
 
     private Date date = new Date();
 
@@ -55,10 +55,13 @@ public class DateUtils {
         String message = null;
         if (date.before(Settings.getOldestAllowable())) {
             // too old
+            Log.d(TAG, "Date too old - not accepting:" + date.toString() + " oldest allowable:" +
+                    Settings.getOldestAllowable());
             status = false;
             message = msgTooOld;
         } else if (date.after(new Date())) {
             // in future
+            Log.d(TAG, "Date in future - not accepting:" + date.toString() );
             status = false;
             message = msgFuture;
         } else {

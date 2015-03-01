@@ -45,7 +45,7 @@ android {
         minSdkVersion 11
         targetSdkVersion 21
 
-	// version numbers for play store - update both
+	    // version numbers for play store - update both
         versionCode 8
         versionName "1.2.0"
     }
@@ -64,17 +64,15 @@ android {
 
     signingConfigs {
         release {
-            gradle.taskGraph.whenReady { taskGraph ->
-                if(taskGraph.hasTask(':app:assembleRelease')) {
-                    // Only execute when we are trying to assemble a release build
-                    def passwd = new String(System.console().readPassword("\n\$ Enter signing password: "))
 
-                    storeFile file("/home/geoff/android_keys/me.uk.geoffwilliams.android.keystore")
-                    storePassword passwd
-                    keyAlias "gwandmob"
-                    keyPassword passwd
-                }
-            }
+            // Only execute when we are trying to assemble a release build
+            def passwd = new String(System.console().readPassword("\n\$ Enter signing password: "))
+
+            storeFile file("/home/geoff/android_keys/me.uk.geoffwilliams.android.keystore")
+            android.signingConfigs.release.storePassword = passwd
+            android.signingConfigs.release.keyPassword = passwd
+            keyAlias "gwandmob"
+
         }
     }
     buildTypes {

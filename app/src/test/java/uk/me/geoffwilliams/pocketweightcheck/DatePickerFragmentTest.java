@@ -38,7 +38,7 @@ import org.robolectric.util.FragmentTestUtil;
  * @author geoff
  */
 public class DatePickerFragmentTest extends TestSupport {
-    private final static String TAG = "pocketweightcheck.DatePickerFragmentTest";
+    private final static String TAG = "pwc.DatePickerFragmentT";
     private DatePickerFragment_ fragment;
     
     @Before
@@ -46,7 +46,11 @@ public class DatePickerFragmentTest extends TestSupport {
         Locale.setDefault(Locale.US);
 
         Settings.setLoadData(false);
-        
+        // restore defaults - prevent cross-test contamination
+        Settings.setMaxSampleAge(30);
+        Settings.setMaxDetailAge(60);
+
+
         fragmentActivity = Robolectric.buildActivity(MainActivity_.class)
                 .create()
                 .start()
