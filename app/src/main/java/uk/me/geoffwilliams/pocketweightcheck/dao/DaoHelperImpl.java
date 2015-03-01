@@ -333,8 +333,11 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
             if (previousTrend < 0) {
                 weight.setTrend(weight.getWeight());
             } else {
+                // no smoothing for archived weights
+                double smoothing = weight.isArchived() ?
+                        Settings.getSmoothingConstantArchived() : Settings.getSmoothingConstant();
                 double trend = previousTrend + 
-                        (Settings.getSmoothingConstant() * 
+                        (smoothing *
                         (weight.getWeight() - previousTrend));
                 weight.setTrend(trend);
             }

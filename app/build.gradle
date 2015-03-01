@@ -62,11 +62,17 @@ android {
 
     signingConfigs {
         release {
-            def passwd = new String(System.console().readPassword("\n\$ Enter signing password: "))
-            storeFile file("/home/geoff/android_keys/me.uk.geoffwilliams.android.keystore")
-            storePassword passwd
-            keyAlias "gwandmob"
-            keyPassword passwd
+            gradle.taskGraph.whenReady { taskGraph ->
+                if(taskGraph.hasTask(':app:assembleRelease')) {
+                    // Only execute when we are trying to assemble a release build
+                    def passwd = new String(System.console().readPassword("\n\$ Enter signing password: "))
+
+                    storeFile file("/home/geoff/android_keys/me.uk.geoffwilliams.android.keystore")
+                    storePassword passwd
+                    keyAlias "gwandmob"
+                    keyPassword passwd
+                }
+            }
         }
     }
     buildTypes {

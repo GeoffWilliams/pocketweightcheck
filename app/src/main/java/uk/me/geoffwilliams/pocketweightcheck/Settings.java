@@ -73,7 +73,11 @@ public class Settings {
      * constant used in calculation of trend data
      */
     private static double smoothingConstant = 0.1d;
-    
+
+    /**
+     * smoothing constant used for archived data (makes it almost exactly follow entered weights)
+     */
+    private static double smoothingConstantArchived = 0.9d;
     /**
      * Argument used for String.format to round floats
      */
@@ -207,6 +211,11 @@ public class Settings {
         Settings.trendSamples = trendSamples;
     }
 
+    public static double getSmoothingConstantArchived() {
+        return smoothingConstantArchived;
+    }
 
-
+    public static void setSmoothingConstantArchived(double smoothingConstantArchived) {
+        Settings.smoothingConstantArchived = smoothingConstantArchived;
+    }
 }
