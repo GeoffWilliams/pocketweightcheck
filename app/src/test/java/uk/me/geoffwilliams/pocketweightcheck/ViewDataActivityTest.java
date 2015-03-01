@@ -42,9 +42,9 @@ import uk.me.geoffwilliams.pocketweightcheck.dao.Weight;
  */
 public class ViewDataActivityTest extends TestSupport {
 
-    private final static String TAG = "pocketweightcheck.ViewDataActivityTest";
+    private final static String TAG = "pwc.ViewDataActivityTst";
     private TableLayout layout;
-    private static final int DELETE_BUTTON_POSITION = 2;
+    private static final int DELETE_BUTTON_POSITION = 3;
     private ViewDataActivity_ viewDataActivity;
     private DaoHelper daoHelper;
 

@@ -91,7 +91,11 @@ public class DaoHelperImpl extends OrmLiteSqliteOpenHelper implements DaoHelper 
 
     @Override
     public void onUpgrade(SQLiteDatabase sqld, ConnectionSource cs, int i, int i1) {
-
+        try{
+            TableUtils.createTableIfNotExists(connectionSource, ArchivedWeight.class);
+        } catch (java.sql.SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private RuntimeExceptionDao<Weight, Integer> getWeightDao() {

@@ -58,6 +58,22 @@ android {
             setRoot('src/test')
         }
     }
+
+
+    signingConfigs {
+        release {
+            def passwd = new String(System.console().readPassword("\n\$ Enter signing password: "))
+            storeFile file("/home/geoff/android_keys/me.uk.geoffwilliams.android.keystore")
+            storePassword passwd
+            keyAlias "gwandmob"
+            keyPassword passwd
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 dependencies {

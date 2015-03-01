@@ -451,11 +451,11 @@ public class DAOTest extends TestSupport {
         // insert a new record to trigger archival process
         insertSampleData(1,1);
 
-        // check the archived weights come back when we ask for weights
+        // check the archived weights come back when we ask for weights (oldest first)
         List<Weight> weights = daoHelper.getWeightByDateAsc();
 
-        // last entry should be an instance of ArchivedWeight
-        assertTrue(weights.get(weights.size() - 1).isArchived());
+        // first entry should be an instance of ArchivedWeight
+        assertTrue(weights.get(0).isArchived());
     }
 
     @Test
